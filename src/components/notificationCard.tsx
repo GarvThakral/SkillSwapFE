@@ -16,7 +16,40 @@ export function NotificationCard(NotificationProps: TeachNotification | TradeNot
                 }
             }
         );
-        console.log(response);
+        if(NotificationProps.type == "TEACH"){
+            const contentString = `${NotificationProps.description} . I am available ${NotificationProps.workingDays} .`
+            const sendingMessage = await axios.post(`${API_URL}/messages`,
+                {
+                    senderId:NotificationProps.sender?.id,
+                    content:contentString,
+                    receiverId:NotificationProps.receiver?.id
+                },
+                {
+                    headers:{
+                        token
+                    }
+                }
+            )
+            console.log(sendingMessage)
+        }else{
+            console.log("Reached here")
+            const contentString = `I would like to trade you ${NotificationProps.senderSkill?.title} in exchange for ${NotificationProps.receiverSkill?.title}. ${NotificationProps.description} . I am available ${NotificationProps.workingDays} .`
+            const sendingMessage = await axios.post(`${API_URL}/messages`,
+                {
+                    senderId:NotificationProps.sender?.id,
+                    content:contentString,
+                    receiverId:NotificationProps.receiver?.id
+                },
+                {
+                    headers:{
+                        token
+                    }
+                }
+            )
+            console.log(sendingMessage)
+
+        }
+        
     };
     async function denyRequest(){
       

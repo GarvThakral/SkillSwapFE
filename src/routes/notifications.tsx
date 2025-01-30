@@ -68,7 +68,12 @@ export function Notifications(){
         <div className = {'flex justify-center p-3 h-screen'}>
             <div className = {'w-screen'}>
                 {allNotifications?.map((item)=>{
-                    return <NotificationCard {...item}/>
+                    if(item.status == "PENDING"){
+                        return <NotificationCard {...item}/>
+                    }
+                    else{
+                        return null
+                    }
                 })}
             </div>
         </div>

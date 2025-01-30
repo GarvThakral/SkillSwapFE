@@ -11,6 +11,8 @@ import { ServiceDesc } from './routes/ServiceDesc';
 import { TeachService } from './routes/teachRequest';
 import { TradeService } from './routes/tradeRequest';
 import { Notifications } from './routes/notifications';
+import Meeting from './routes/CreateMeeting';
+import { JoinMeeting } from './routes/joinMeeting';
 
 function App() {
   return (
@@ -28,6 +30,9 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/skills/:id" element={<Service />} />
+            <Route path="/video" element={<Meeting />} />
+            <Route path="/video/join/:id" element={<JoinMeeting />} />
+            
           </Routes>
         </BrowserRouter>
       </div>

@@ -49,3 +49,8 @@ export const messageButtonState = atom({
   key: "messageButton",
   default:false
 })
+
+export const meetingReceiverId = atom({
+  key:"ReceiverId",
+  default:0
+})

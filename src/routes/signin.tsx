@@ -30,6 +30,7 @@ export function SignIn(){
                 password:passwordRef.current.value
             })
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userId', response.data.userId);
             location('/skills')
 
         }
