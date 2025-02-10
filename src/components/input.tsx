@@ -1,7 +1,7 @@
 import { SearchIcon } from "./searchIcon";
-import { useRef } from "react";
+import {  ChangeEvent, useRef } from "react";
 
-export function Input({changeFunction}:{changeFunction:()=>void}){
+export function Input({changeFunction}:{changeFunction:(e:ChangeEvent<HTMLInputElement>) => Promise<void>}){
     const inputRef = useRef<HTMLInputElement>(null);
     return(
     <div className = {'flex h-10 bg-white items-center p-2 border-none rounded-xl w-96 outline-none text-black'} onClick = {()=>{inputRef.current?.focus()}}>

@@ -48,13 +48,12 @@ export function SignUp() {
             form.append("profilePicture", imageRef.current.files[0]);
 
             try {
-                const response = await axios.post(`${API_URL}/user/signup`, form, {
+                await axios.post(`${API_URL}/user/signup`, form, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
                 });
 
-                console.log("Response:", response.data);
             } catch (error: any) {
                 console.error("Error:", error.response?.data || error.message);
             }

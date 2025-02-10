@@ -2,10 +2,12 @@ export interface TeachNotification{
     id?: number;
     senderId?: number;
     receiverId?: number;
-    skillId?: number;
+    skillId: number;
     description?: string;
     workingDays?: string;
     status?: string;
+    senderToken:number;
+    recieverToken:number;
     createdAt?: string;
     type:"TEACH"
     sender?: {
@@ -26,6 +28,7 @@ export interface TeachNotification{
         description?: string;
         proficiencyLevel?: string;
     }
+    
 }
 
 export interface TradeNotification{
@@ -36,7 +39,9 @@ export interface TradeNotification{
     receiverSkillId?:number;
     description?:string; 
     workingDays?:string;
-    status?: "PENDING" | "COMPLETED" | "CANCELED";
+    senderToken:number;
+    recieverToken:number;
+    status?: string;
     createdAt?:string;
     type:"TRADE"
     sender?: {

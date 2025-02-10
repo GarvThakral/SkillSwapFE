@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { SearchIcon } from "../components/searchIcon";
-import axios, { AxiosHeaders } from "axios";
+import axios from "axios";
 import { Button } from "../components/buttons";
-import { useNavigate } from "react-router-dom";
 import { SkillProps } from "./utilInterface/SkillInterface";
 const API_URL = import.meta.env.VITE_API_URL
 
 export function CreateService(){
-    const navigate = useNavigate();
-    const [ skillSelected , setSkillSelected ] = useState(null);
-    const [ skillDesc , setSkillDesc ] = useState(null);
+    const priceRef = useRef<HTMLInputElement>(null);
+    const [ skillSelected , setSkillSelected ] = useState<number | null>(null);
+    const [ skillDesc , setSkillDesc ] = useState<string | null>(null);
     const [ searching , setSearching ] = useState(false);
-    const [ existingSkills , setExistingSkills ] = useState<SkillProps[] | null>(null);
+    const [  , setExistingSkills ] = useState<SkillProps[] | null>(null);
     const [ filteredSkills , setFilteredSkills ] = useState<SkillProps[] | null>(null);
     const [ skillError , setSkillError ] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +22,7 @@ export function CreateService(){
         await setExistingSkills(response.data.skills);
         await setFilteredSkills(response.data.skills);
     }
-    function searchSkills(e){
+    function searchSkills(e:ChangeEvent<HTMLInputElement>){
         if(!inputRef == null && inputRef.current){
             inputRef.current.value = e.target.value;
         }
@@ -31,8 +30,7 @@ export function CreateService(){
     async function nextScreen(){
         let skillArray = await axios.get(`${API_URL}/skill`);
         let skillsArray = skillArray.data.skills;
-        console.log(skillsArray)
-        skillsArray.forEach(element => {
+        skillsArray.forEach((element:SkillProps) => {
             if(element.title == inputRef.current?.value){
                 setSkillExists(true);
                 setSkillSelected(element.id);
@@ -48,10 +46,11 @@ export function CreateService(){
     }
     async function create(){
         const token = localStorage.getItem('token')
-        const response = await axios.post(`${API_URL}/service`,
+        await axios.post(`${API_URL}/service`,
             {
                 skillId:skillSelected,
-                description:skillDesc   
+                description:skillDesc,
+                tokenPrice:parseInt(priceRef.current?.value ?? '0')
             },
             {
                 headers: {
@@ -74,6 +73,8 @@ export function CreateService(){
                 <div className = {'h-40 w-[500px] flex justify-center items-center rounded-2xl bg-blue-400 bg-opacity-20 space-x-3 p-2'}>
                     <textarea ref = {textAreaRef} className =  "h-36 w-[490px] bg-transparent outline-none placeholder-slate-500" placeholder = "(eg)..Looking for a react developer to teach me react basics."></textarea>
                 </div>
+                <span className = {'text-3xl'}>How much are you willing to pay for the skill ?</span>
+                <input type = "number" defaultValue={50} className = {'p-3 border-2 w-20'} ref = {priceRef}></input>
                 {textAreaRef.current?.value.length != 0 ? <Button text="Next" style = "Primary" onclick = {()=>create()}/>:null}
             </div>
             :
@@ -87,7 +88,7 @@ export function CreateService(){
                         ref = {inputRef}
                         placeholder = {'Search for any skill ...'} 
                         className = {'outline-none bg-transparent placeholder-slate-950'}
-                        onChange={(e)=>searchSkills(e.target.value)}>
+                        onChange={(e)=>searchSkills(e)}>
                     </input>
                 </div>
                 {skillError ? <span className = {'text-red-600'}>Skill does not exist , create one now ?</span>:null}
@@ -97,7 +98,10 @@ export function CreateService(){
                     <div className = {'overflow-y-auto h-28 border-2 w-64 p-3'}>
                         <div>
                             {filteredSkills?.map((item,index)=>{
-                                return <div key = {index}  onClick = {()=>{inputRef.current.value = item.title;setSearching((c)=>!c)}}>{item.title}</div>
+                                return <div key = {index}  onClick = {()=>{
+                                    inputRef.current!.value = item.title;
+                                    setSearching((c)=>!c)}}>{item.title}
+                                    </div>
                             })}
                         </div>
                     </div>

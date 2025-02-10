@@ -1,13 +1,13 @@
 import axios from "axios";
 import { useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function SignIn(){
     const [usernameError,setUsernameError] = useState(false);
     const [passwordError,setpasswordError] = useState(false);
-
+    console.log(setUsernameError)
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 

@@ -1,25 +1,21 @@
 export interface ServiceCard{
     clickFunction ?: (jobId:number)=>void;
     createdAt?:string;
-    id?:Number;
-    requesterId:Number;
-    skillId:Number
+    description:string;
+    id:number;
+    requesterId:number;
+    tokenPrice:number;
+    skillId:number;
     status:"PENDING"|"COMPLETED"|"CANCELLED";
     updatedAt:string;
-    sender:{
-        id:string;
-        availabilitySchedule:string;
-        profilePicture:string;
-        username:string;
-    };
-    receiver:{
-        id:string;
+    user:{
+        id:number;
         availabilitySchedule:string;
         profilePicture:string;
         username:string;
     };
     skill:{
-        id:string;
+        id:number;
         description:string;
         proficiencyLevel:"BEGINNER" | "INTERMEDIATE" | "ADVANCED";
         title:string;

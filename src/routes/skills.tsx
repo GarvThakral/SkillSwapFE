@@ -1,39 +1,21 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { JobCard } from "../components/jobCard";
 import axios from "axios";
-import { useRecoilSnapshot, useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { messageButtonState, originalResponseState, responseState } from "../recoil/atoms";
 import { useNavigate } from "react-router-dom";
 import { MessageBox } from "../components/messageBox";
 const API_URL = import.meta.env.VITE_API_URL
 
-interface ServiceResponse{
-  createdAt:string;
-  id:Number;
-  requesterId:Number;
-  skillId:Number
-  status:"PENDING"|"COMPLETED"|"CANCELLED";
-  updatedAt:string;
-  user:{
-    availabilitySchedule:string;
-    profilePicture:string;
-    username:string;
-  };
-  skill:{
-    description:string;
-    proficiencyLevel:"BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-    title:string;
-  }
-}
 
 export function SkillTrade() {
   const navigate = useNavigate();
   const [response, setResponse] = useRecoilState(responseState);
   const [originalResponse, setOriginalResponse] = useRecoilState(originalResponseState);
-  const [ messageBoxOn , setMessageBoxOn ] = useRecoilState(messageButtonState)
+  const messageBoxOn  = useRecoilState(messageButtonState)
   async function filterServices(changeParams:string){
-    console.log("working")
-    console.log(changeParams)
+    const filteredResponse = originalResponse?.filter((item)=>item.skill.proficiencyLevel == changeParams)
+    setResponse(filteredResponse ?? originalResponse)
   }
 
   function openService(jobId:number){
@@ -41,7 +23,6 @@ export function SkillTrade() {
   }
 
   async function fetchServices(){
-    console.log("Fetching")
     const token = localStorage.getItem('token')
     const res = await axios.get(`${API_URL}/service`,{
       headers:{
@@ -51,12 +32,17 @@ export function SkillTrade() {
     if(res){
       setResponse(res.data.serviceRequests);
       setOriginalResponse(res.data.serviceRequests);
-      console.log(res.data)
     }else{
-      console.log("Could not find services")
     }
   }
 
+  let stringUserId = localStorage.getItem('userId') ;
+  let userId:number;
+  if(stringUserId){
+    userId = parseInt(stringUserId);
+  }
+
+  
   useEffect(()=>{
     fetchServices();
   },[])
@@ -87,7 +73,7 @@ export function SkillTrade() {
         {/* Status */}
         <div className="text-[#0B2638] mt-4">Proficiency Level</div>
         <div className = {'w-[90%]'}>
-          <select className = {'px-2 py-1 outline-none w-full rounded-sm'} onChange={(e:ChangeEvent)=>filterServices(e.target.value)}>
+          <select className = {'px-2 py-1 outline-none w-full rounded-sm'} onChange={(e:ChangeEvent<HTMLSelectElement>)=>filterServices(e.target.value)}>
             <option value="">ALL</option>
             <option value="BEGINNER">Beginner</option>
             <option value="INTERMEDIATE">Intermediate</option>
@@ -108,20 +94,26 @@ export function SkillTrade() {
       </div>
       {/* Cards */}
       <div className="col-span-10 p-4 bg-[#E4E4E4] h-full w-full justify-start flex flex-wrap ">
-        {response?.map(( item , index )=>
-          <JobCard
-            clickFunction = {openService}
-            key = {index}
-            createdAt = {item.createdAt}
-            requesterId = {item.requesterId}
-            skillId = {item.skillId}
-            status = {item.status}
-            updatedAt = {item.updatedAt}
-            user = {item.user}
-            skill = {item.skill}
-            id = {item.id}
-          ></JobCard>
+        {response?.map(( item , index )=>{
+          if(item.user.id != userId ){
+            return<JobCard
+              clickFunction = {openService}
+              key = {index}
+              createdAt = {item.createdAt}
+              requesterId = {item.requesterId}
+              tokenPrice={item.tokenPrice}
+              skillId = {item.skillId}
+              status = {item.status}
+              updatedAt = {item.updatedAt}
+              user = {item.user}
+              skill = {item.skill}
+              id = {item.id}
+              description= {item.description}
+            ></JobCard>
+          }
+        }
         )}
+        
       </div>
     </div>
   );

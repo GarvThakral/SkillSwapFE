@@ -1,14 +1,14 @@
 import axios from "axios";
 import { TeachNotification, TradeNotification } from "./utilInterface/NotificationInterface";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NotificationCard } from "../components/notificationCard";
+import { useRecoilState } from "recoil";
+import { allNotificationsArray } from "../recoil/atoms";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function Notifications(){
 
-    const [ teachNotifications , setTeachNotifications ] = useState<TeachNotification[] | null>(null);
-    const [ tradeNotifications , setTradeNotifications ] = useState<TradeNotification[] | null>(null);
-    const [ allNotifications , setAllNotifications ] = useState<(TeachNotification | TradeNotification)[]>([]);
+    const [ allNotifications , setAllNotifications ] = useRecoilState<(TeachNotification | TradeNotification)[]>(allNotificationsArray);
 
     async function fetchAllRequests(){
         const token = localStorage.getItem('token');
@@ -26,7 +26,6 @@ export function Notifications(){
                 }
             }
         )
-        console.log(response);
         setAllNotifications([ ...response.data.teachRequests , ...response2.data.tradeRequests ]);
     }
 
@@ -53,7 +52,6 @@ export function Notifications(){
     //             }
     //         }
     //     )
-    //     console.log(response);
     //     setTradeNotifications(response.data.tradeRequests);
 
     // };

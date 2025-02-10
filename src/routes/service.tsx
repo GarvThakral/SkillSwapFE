@@ -1,9 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
-import { Navigate, useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { Button } from "../components/buttons";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { receiverId, skillId } from "../recoil/atoms";
 import { ServiceCard } from "./utilInterface/ServiceCardInterface";
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -16,14 +14,11 @@ const profTextStyles = {
 
 export function Service(){
     const {id} = useParams();
-    let [recieverId,setRecieverId] = useRecoilState(receiverId);
-    let [skillsId,setSkillId] = useRecoilState(skillId);
     const [service,setService] = useState<ServiceCard | null>(null);
 
     async function fetchSkill(skillId:string){
         const response = await axios.get(`${API_URL}/service/${skillId}`)
         setService(response.data.serviceRequest)
-        console.log(response.data)
     }
 
 
@@ -48,7 +43,7 @@ export function Service(){
                         {service.skill.proficiencyLevel}
                     </span>
                     <div className = {'flex space-x-7'}>
-                        <Button text = {"Teach"} style = {"Primary"} onclick={()=>createTeachRequest()}/>
+                        <Button text = {"Teach"} style = {"Primary"} />
                         <Button text = {"Teach"} style = {"Secondary"}/>
                     </div>
                     <span>Price:50<img src = 'images.png'></img></span>

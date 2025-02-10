@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { SearchIcon } from "../components/searchIcon";
 import axios from "axios";
 import { Button } from "../components/buttons";
 
@@ -14,9 +13,8 @@ interface SkillProps{
 
 
 export function ServiceDesc(){
-    console.log(API_URL)
     const [ searching , setSearching ] = useState(false);
-    const [ existingSkills , setExistingSkills ] = useState<SkillProps[] | null>(null);
+    const [ , setExistingSkills ] = useState<SkillProps[] | null>(null);
     const [ filteredSkills , setFilteredSkills ] = useState<SkillProps[] | null>(null);
     const [ skillError , setSkillError ] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -25,17 +23,11 @@ export function ServiceDesc(){
         await setExistingSkills(response.data.skills);
         await setFilteredSkills(response.data.skills);
     }
-    function searchSkills(e){
-        if(inputRef){
-            inputRef.current.value = e.target.value;
-        }
-    }
     async function nextScreen(){
         let skillArray = await axios.get(`${API_URL}/skill`);
         let skillsArray = skillArray.data.skills;
-        console.log(skillsArray)
         let skillExists = false;
-        skillsArray.forEach(element => {
+        skillsArray.forEach((element:SkillProps) => {
             if(element.title == inputRef.current?.value){
                 skillExists = true;
                 return;
@@ -68,7 +60,7 @@ export function ServiceDesc(){
                 <div className = {'overflow-y-auto h-28 border-2 w-64 p-3'}>
                     <div>
                         {filteredSkills?.map((item)=>{
-                            return <div onClick = {()=>{inputRef.current.value = item.title;setSearching((c)=>!c)}}>{item.title}</div>
+                            return <div onClick = {()=>{inputRef.current!.value = item.title;setSearching((c)=>!c)}}>{item.title}</div>
                         })}
                     </div>
                 </div>

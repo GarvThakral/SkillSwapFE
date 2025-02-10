@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function Meeting({meetingId }:{meetingId?:string }) {
   
   const [meeting, initMeeting] = useDyteClient();
-  const [ meetingRecid , setMeetingRecId ] = useRecoilState(meetingReceiverId) 
+  const [ meetingRecid  ] = useRecoilState(meetingReceiverId) 
 
   async function createMeetingAndClient(){
     const createMeeting = async () => {
@@ -39,14 +39,13 @@ export default function Meeting({meetingId }:{meetingId?:string }) {
     };
     let meeting_id;
     if(meetingId){
-      console.log(meetingId)
       meeting_id = meetingId;
     }else{
       meeting_id = await createMeeting();
     }
     const authToken = await addParticipant(meeting_id);
     const token = localStorage.getItem('token')
-    const sending = await axios.post(`${API_URL}/messages`,
+    await axios.post(`${API_URL}/messages`,
       {
           content:"Join",
           receiverId:meetingRecid,
@@ -76,5 +75,5 @@ export default function Meeting({meetingId }:{meetingId?:string }) {
     <DyteProvider value = {meeting} fallback = {<i>Loading ... </i>}>
       <MyMeeting />
     </DyteProvider>
-  ); // TODO: render the UI
+  ); 
 }
