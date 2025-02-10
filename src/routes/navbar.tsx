@@ -2,7 +2,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { Button } from "../components/buttons";
 import { Input } from "../components/input";
 import { messageButtonState, originalResponseState, responseState, signInState } from "../recoil/atoms";
-import { ChangeEventHandler, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom'
 import { NotificationBell } from "../components/notification";
 import { MessageButton } from "../components/messageButtonIcon";
