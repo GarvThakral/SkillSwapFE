@@ -4,7 +4,7 @@ import { Button } from "../components/buttons";
 export function BuyTokens() {
     const [amount, setAmount] = useState("");
 
-    function loadScript(src) {
+    function loadScript(src:any) {
         return new Promise((resolve) => {
             const script = document.createElement("script");
             script.src = src;
@@ -15,7 +15,7 @@ export function BuyTokens() {
     }
 
     async function displayRazorpay() {
-        if (!amount || amount <= 0) {
+        if (!amount || parseInt(amount) <= 0) {
             alert("Please enter a valid amount");
             return;
         }
@@ -51,7 +51,7 @@ export function BuyTokens() {
             description: "Token Purchase",
             image: "https://example.com/logo.png",
             order_id: data.id, // Order ID from backend
-            handler: async function (response) {
+            handler: async function (response:any) {
                 // Send response to backend for verification
                 const userId = localStorage.getItem('userId')
                 const verifyRes = await fetch("http://localhost:3000/payment/verify-payment", {
@@ -85,7 +85,7 @@ export function BuyTokens() {
                 color: "#3399cc",
             },
         };
-
+        // @ts-ignore
         const paymentObject = new window.Razorpay(options);
         paymentObject.open();
     }

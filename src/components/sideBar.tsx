@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import { NotificationBell } from "./notification";
 import { MessageButton } from "./messageButtonIcon";
 import { messageButtonState, originalResponseState, responseState, sideBarState, userTokens } from "../recoil/atoms";
-import { Input } from "./input";
-import { BurgerIcon } from "./burgerIcon";
 import { Button } from "./buttons";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -26,18 +24,18 @@ export function SideBar(){
         }
         fetchUserTokens();
     },[])
-    async function searchSkills(searchParam:string){
-        if(searchParam.length === 0){
-        setResponse(originalResponse);
-        return
-        }
-        const filteredResponse = originalResponse?.filter((item) =>
-        item.skill.title.toLowerCase().includes(searchParam.toLowerCase())
-        );
+    // async function searchSkills(searchParam:string){
+    //     if(searchParam.length === 0){
+    //     setResponse(originalResponse);
+    //     return
+    //     }
+    //     const filteredResponse = originalResponse?.filter((item) =>
+    //     item.skill.title.toLowerCase().includes(searchParam.toLowerCase())
+    //     );
   
-        setResponse(filteredResponse ?? null);
+    //     setResponse(filteredResponse ?? null);
 
-    }
+    // }
     async function fetchUserTokens(){
         const userId = parseInt(localStorage.getItem("userId") ?? '0');
         const response = await axios.post(`${API_URL}/user/tokens`,{
