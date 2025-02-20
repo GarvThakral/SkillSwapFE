@@ -1,5 +1,9 @@
 import axios from "axios";
 import { useRef, useState } from "react";
+import { useRecoilState } from "recoil";
+import { loaderState } from "../recoil/atoms";
+import { useNavigate } from "react-router-dom";
+import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,10 +22,12 @@ export function SignUp() {
     const availabilityRef = useRef<HTMLInputElement>(null);
     const serviceRef = useRef<HTMLInputElement>(null);
     const bioRef = useRef<HTMLInputElement>(null);
-
+    const navigate = useNavigate()
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
+    
     async function loginUser() {
+        setIsLoading(true);
         const form = new FormData();
-
         if (
             usernameRef.current &&
             emailRef.current &&
@@ -33,18 +39,28 @@ export function SignUp() {
             imageRef.current &&
             imageRef.current.files
         ) {
-            if (passwordRef.current.value !== confirmPasswordRef.current.value) {
-                setConfirmPasswordError(true);
+            setConfirmPasswordError(false);
+            setPasswordError(false);
+            if (!usernameRef.current?.value) setUsernameError(true);
+            if (!emailRef.current?.value) setEmailError(true);
+            if (!passwordRef.current?.value) setPasswordError(true);
+            if (!imageRef.current?.files?.length) setImageError(true);
+            if(passwordRef.current.value == ""){
+                setPasswordError(true);
+                setIsLoading(false);
                 return;
             }
-            setConfirmPasswordError(false);
-
+            if (passwordRef.current.value !== confirmPasswordRef.current.value) {
+                setConfirmPasswordError(true);
+                setIsLoading(false);
+                return;
+            }
+            
             form.append("username", usernameRef.current.value);
             form.append("email", emailRef.current.value);
             form.append("password", passwordRef.current.value);
             form.append("bio", bioRef.current.value);
             form.append("availabilitySchedule", availabilityRef.current.value);
-            form.append("serviceDuration", serviceRef.current.value);
             form.append("profilePicture", imageRef.current.files[0]);
 
             try {
@@ -53,41 +69,45 @@ export function SignUp() {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-
+                navigate('/skills');
             } catch (error: any) {
                 console.error("Error:", error.response?.data || error.message);
             }
-        } else {
-            if (!usernameRef.current?.value) setUsernameError(true);
-            if (!emailRef.current?.value) setEmailError(true);
-            if (!passwordRef.current?.value) setPasswordError(true);
-            if (!imageRef.current?.files?.length) setImageError(true);
-        }
+        } 
+
+        setIsLoading(false);
+
     }
 
     return (
         <div className="h-screen overflow-hidden flex items-center justify-center">
-            <div className="w-[500px] h-[700px] shadow-2xl flex flex-col items-center justify-between p-3">
+            {isLoading ? <Loader/>:null}
+            <div className="w-[800px] h-[700px] shadow-2xl flex flex-col items-center justify-between p-3">
                 <span className="text-3xl p-2 px-3 border-b-2">Sign up</span>
                 <span className="text-md">Sign up to continue</span>
+                <div className = {'flex w-[80%]'}>
 
-                <input ref={usernameRef} className="outline-none border-b w-[80%]" placeholder="Username" />
-                {usernameError && <span className="text-red-500 w-[80%]">Username is required.</span>}
+                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
+                        <input ref={usernameRef} className="outline-none border-b w-[80%]" placeholder="Username" />
+                        {usernameError && <span className="text-red-500 w-[80%]">Username is required.</span>}
 
-                <input ref={emailRef} className="outline-none border-b w-[80%]" placeholder="Email" />
-                {emailError && <span className="text-red-500 w-[80%]">Email is required.</span>}
+                        <input ref={emailRef} className="outline-none border-b w-[80%]" placeholder="Email" />
+                        {emailError && <span className="text-red-500 w-[80%]">Email is required.</span>}
 
-                <input ref={passwordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Password" />
-                {passwordError && <span className="text-red-500 w-[80%]">Password is required.</span>}
+                        <input ref={passwordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Password" />
+                        {passwordError && <span className="text-red-500 w-[80%]">Password is required.</span>}
 
-                <input ref={confirmPasswordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Confirm Password" />
-                {confirmPasswordError && <span className="text-red-500 w-[80%]">Passwords do not match.</span>}
+                        <input ref={confirmPasswordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Confirm Password" />
+                        {confirmPasswordError && <span className="text-red-500 w-[80%]">Passwords do not match.</span>}
+                        
+                    </div>
+                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
+                        <input ref={availabilityRef} className="outline-none border-b w-[80%]" placeholder="Availability (e.g., Mon-Friday)" />
+                        <input ref={bioRef} className="outline-none border-b w-[80%]" placeholder="Bio" />
+                    </div>
+                </div>
 
-                <input ref={availabilityRef} className="outline-none border-b w-[80%]" placeholder="Availability (e.g., Mon-Friday)" />
-                <input ref={serviceRef} className="outline-none border-b w-[80%]" placeholder="Service Duration (e.g., 4 weeks)" />
-                <input ref={bioRef} className="outline-none border-b w-[80%]" placeholder="Bio" />
-
-                <div>
+                <div className = {'flex flex-col'}>
                     <label htmlFor="pfp" className="border-2 p-2 rounded-lg text-black cursor-pointer">Upload Profile Picture</label>
                     <input ref={imageRef} type="file" id="pfp" className="hidden" />
                     {imageError && <span className="text-red-500">Please upload a profile picture.</span>}

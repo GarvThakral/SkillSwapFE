@@ -33,6 +33,10 @@ export const messageButtonState = atom({
   key: "messageButton",
   default:false
 })
+export const sideBarState = atom({
+  key: "sideBar",
+  default:false
+})
 
 export const meetingReceiverId = atom({
   key:"ReceiverId",
@@ -51,4 +55,8 @@ export const tradeRequestRecieverTokens = atom({
 export const allNotificationsArray = atom<(TeachNotification | TradeNotification)[]>({
   key: "all notifications",
   default: [], 
+});
+export const loaderState = atom({
+  key : "loaderstate",
+  default : false 
 });

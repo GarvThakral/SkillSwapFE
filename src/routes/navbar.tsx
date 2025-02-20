@@ -1,12 +1,14 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Button } from "../components/buttons";
 import { Input } from "../components/input";
-import { messageButtonState, originalResponseState, responseState, signInState } from "../recoil/atoms";
-import {  useEffect, useState } from "react";
+import { messageButtonState, originalResponseState, responseState, sideBarState, signInState, userTokens } from "../recoil/atoms";
+import {   useEffect, useState } from "react";
 import { Link, useLocation } from 'react-router-dom'
 import { NotificationBell } from "../components/notification";
 import { MessageButton } from "../components/messageButtonIcon";
 import axios from "axios";
+import { BurgerIcon } from "../components/burgerIcon";
+import { SideBar } from "../components/sideBar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -16,8 +18,8 @@ export function NavBar(){
   const [originalResponse] = useRecoilState(originalResponseState);
   const location = useLocation();
   const  setMessageButtonOn  = useSetRecoilState(messageButtonState);
-  const [ userTokens , setUserTokens ] = useState(100)
-
+  const [ userToken , setUserTokens ] = useRecoilState(userTokens);
+  const setSideBarOpen  = useSetRecoilState(sideBarState);
   async function searchSkills(searchParam:string){
     if(searchParam.length === 0){
       setResponse(originalResponse);
@@ -30,7 +32,7 @@ export function NavBar(){
     setResponse(filteredResponse ?? null);
 
   }
-  async function fetchUserTokens(){
+  async function fetchUserToken(){
     const userId = parseInt(localStorage.getItem("userId") ?? '0');
     const response = await axios.post(`${API_URL}/user/tokens`,{
       userId
@@ -40,7 +42,7 @@ export function NavBar(){
 
   useEffect(()=>{
     const token = localStorage.getItem('token');
-    fetchUserTokens();
+    fetchUserToken();
     if(token){
       setIsSignedIn(true)
     }else{
@@ -48,10 +50,17 @@ export function NavBar(){
     }
   });
 
+  function logUserOut(){
+    console.log("seems to be working")
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+  }
+
   return(
-  <div className = {'h-16 w-full bg-[#0B2638] flex items-center justify-between text-white px-12'}>
-    <img src = "swap.png" className = "size-12"></img>
-    <div className = {'flex items-center space-x-16'}>
+  <div className = {'h-16 bg-[#0B2638] flex items-center justify-between text-white px-12 overflow-hidden '}>
+    <img src = "swap.png" className = "size-14"></img>
+    <div className = {'items-center text-xs lg:text-sm  hidden md:flex lg:space-x-12 space-x-6'}>
       {location.pathname !== '/skills' ? 
         <Link to = "/skills">
           <span>Browse skills</span>
@@ -68,26 +77,41 @@ export function NavBar(){
       <Link to = "/notifications">
         <NotificationBell />
       </Link>
-      {signedIn ? <div className = {'cursor-pointer'}><MessageButton onClick = {()=>setMessageButtonOn((c)=>!c)}/></div> :null}
-    </div>
-    {location.pathname == '/skills' ? <Input changeFunction={async (e: React.ChangeEvent<HTMLInputElement>) => {await searchSkills(e.target.value);}} />:null}
-    <div className = "flex items-center">
+      { signedIn ? 
+        <div>
+        <MessageButton 
+          onClick={() => {
+            setMessageButtonOn((c) => !c);
+            setSideBarOpen(false);
+          }} 
+        /> 
+        </div>
+        : null
+      }
+      <Link to = "/purchase">
+        <span>Buy tokens</span>
+      </Link>
       {signedIn ? 
         <div className = "flex items-center">
-          <img src = "coin.png" className = "size-12"></img>
-          <span className="mr-12">{userTokens}</span>
+          <img src = "coin.png" className = "size-8"></img>
+          <span className="text-sm pr-2">{userToken}</span>
         </div>:
         null 
       }
+    </div>
+    <div className = "items-center hidden md:flex">
       
       {signedIn ?
-      <Link to = "/signin">
-        <Button text="Sign In" style ="Tertiary"/>
+      <Link to = "/">
+        <Button text="Log out" style ="Tertiary" onclick={()=>logUserOut()}/>
       </Link> :
       <Link to = "/signup">
         <Button text="Sign Up" style ="Tertiary"/>
       </Link> 
       }
+    </div>
+    <div onClick = {()=>{setSideBarOpen((c)=>!c) ; setMessageButtonOn(false)}} className = {'md:hidden'}>
+      <BurgerIcon />
     </div>
   </div>
   );

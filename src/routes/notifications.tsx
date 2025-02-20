@@ -3,14 +3,16 @@ import { TeachNotification, TradeNotification } from "./utilInterface/Notificati
 import { useEffect } from "react";
 import { NotificationCard } from "../components/notificationCard";
 import { useRecoilState } from "recoil";
-import { allNotificationsArray } from "../recoil/atoms";
+import { allNotificationsArray, loaderState } from "../recoil/atoms";
+import Loader from "../components/loader";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function Notifications(){
 
     const [ allNotifications , setAllNotifications ] = useRecoilState<(TeachNotification | TradeNotification)[]>(allNotificationsArray);
-
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState);
     async function fetchAllRequests(){
+        setIsLoading(true);
         const token = localStorage.getItem('token');
         const response = await axios.get(`${API_URL}/teachRequest` ,
             {
@@ -27,43 +29,15 @@ export function Notifications(){
             }
         )
         setAllNotifications([ ...response.data.teachRequests , ...response2.data.tradeRequests ]);
+        setIsLoading(false);
     }
-
-    // async function fetchTeachRequests(){
-        
-    //     const token = localStorage.getItem('token');
-    //     const response = await axios.get(`${API_URL}/teachRequest` ,
-    //         {
-    //             headers: {
-    //                 token
-    //             }
-    //         }
-    //     )
-    //     setTeachNotifications(response.data.teachRequests)
-
-    // };
-
-    // async function fetchTradeRequests(){
-    //     const token = localStorage.getItem('token');
-    //     const response = await axios.get(`${API_URL}/tradeRequest` ,
-    //         {
-    //             headers: {
-    //                 token
-    //             }
-    //         }
-    //     )
-    //     setTradeNotifications(response.data.tradeRequests);
-
-    // };
-
     useEffect(()=>{
-        // fetchTeachRequests()
-        // fetchTradeRequests()
         fetchAllRequests()
     },[]);
 
     return(
         <div className = {'flex justify-center p-3 h-screen'}>
+            {isLoading ? <Loader/> :null}
             <div className = {'w-screen'}>
                 {allNotifications?.map((item)=>{
                     if(item.status == "PENDING"){

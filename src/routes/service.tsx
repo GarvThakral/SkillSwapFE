@@ -3,6 +3,9 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { Button } from "../components/buttons";
 import { ServiceCard } from "./utilInterface/ServiceCardInterface";
+import { useRecoilState } from "recoil";
+import { loaderState } from "../recoil/atoms";
+import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,10 +18,12 @@ const profTextStyles = {
 export function Service(){
     const {id} = useParams();
     const [service,setService] = useState<ServiceCard | null>(null);
-
+    const [isLoading , setIsLoading ] = useRecoilState(loaderState)
     async function fetchSkill(skillId:string){
+        setIsLoading(true);
         const response = await axios.get(`${API_URL}/service/${skillId}`)
         setService(response.data.serviceRequest)
+        setIsLoading(false);
     }
 
 
@@ -29,6 +34,7 @@ export function Service(){
     },[id])
 
     return<div className = {'h-screen flex flex-col items-center justify-center'}>
+        {isLoading ? <Loader/>:null}
         {service ? 
         <div className = "flex flex-col items-center w-[60%] space-y-7 shadow-lg p-4">
                 <img src = {service.user.profilePicture} className = {'size-36 rounded-[50%] border-2 hover:scale-105 duration-75'}></img>
@@ -46,7 +52,7 @@ export function Service(){
                         <Button text = {"Teach"} style = {"Primary"} />
                         <Button text = {"Teach"} style = {"Secondary"}/>
                     </div>
-                    <span>Price:50<img src = 'images.png'></img></span>
+                    <span className = {'flex items-center '}>Price:50<img src = '/coin.png' className = {'size-6'}></img></span>
         </div>
         :
             <div>Skill may have been deleted</div>

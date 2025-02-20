@@ -1,119 +1,164 @@
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { JobCard } from "../components/jobCard";
 import axios from "axios";
 import { useRecoilState } from "recoil";
-import { messageButtonState, originalResponseState, responseState } from "../recoil/atoms";
+import { originalResponseState, responseState } from "../recoil/atoms";
 import { useNavigate } from "react-router-dom";
-import { MessageBox } from "../components/messageBox";
-const API_URL = import.meta.env.VITE_API_URL
-
+import { ArrowIcon } from "../components/arrowIcon";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function SkillTrade() {
   const navigate = useNavigate();
   const [response, setResponse] = useRecoilState(responseState);
   const [originalResponse, setOriginalResponse] = useRecoilState(originalResponseState);
-  const messageBoxOn  = useRecoilState(messageButtonState)
-  async function filterServices(changeParams:string){
-    const filteredResponse = originalResponse?.filter((item)=>item.skill.proficiencyLevel == changeParams)
-    setResponse(filteredResponse ?? originalResponse)
-  }
+  const [ filterOpen , setFilterOpen ] = useState(true);
 
-  function openService(jobId:number){
-    navigate(`/skills/${jobId}`)
-  }
+  // State for filters
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedProficiency, setSelectedProficiency] = useState<string>("");
 
-  async function fetchServices(){
-    const token = localStorage.getItem('token')
-    const res = await axios.get(`${API_URL}/service`,{
-      headers:{
-        token
-      }
+  // Fetch Data from API
+  async function fetchServices() {
+    const token = localStorage.getItem("token");
+    const res = await axios.get(`${API_URL}/service`, {
+      headers: { token },
     });
-    if(res){
+
+    if (res) {
+      setOriginalResponse(res.data.serviceRequests); // Store the original
       setResponse(res.data.serviceRequests);
-      setOriginalResponse(res.data.serviceRequests);
-    }else{
     }
   }
 
-  let stringUserId = localStorage.getItem('userId') ;
-  let userId:number;
-  if(stringUserId){
+  // Apply filters dynamically
+  function applyFilters() {
+    let filteredResponse = originalResponse;
+
+    // Apply Search Filter
+    if (searchQuery.trim() !== "") {
+      filteredResponse = filteredResponse?.filter((item) =>
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply Status Filter (Multiple Selection)
+    if (selectedStatus.length > 0) {
+      filteredResponse = filteredResponse?.filter((item) =>
+        selectedStatus.includes(item.status)
+      );
+    }
+
+    // Apply Proficiency Level Filter
+    if (selectedProficiency !== "") {
+      filteredResponse = filteredResponse?.filter(
+        (item) => item.skill.proficiencyLevel === selectedProficiency
+      );
+    }
+
+    setResponse(filteredResponse ?? originalResponse);
+  }
+
+  useEffect(() => {
+    applyFilters();
+  }, [searchQuery, selectedStatus, selectedProficiency]);
+
+  function toggleStatus(status: string) {
+    setSelectedStatus((prev) =>
+      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
+    );
+  }
+
+  useEffect(() => {
+    fetchServices();
+    window.addEventListener('resize', (e)=>{
+      if(window.innerWidth < 640){
+        if(filterOpen){
+          setFilterOpen(false);
+        }
+      }
+      if(window.innerWidth >= 640){
+        if(!filterOpen){
+          setFilterOpen(true);
+        }
+      }
+    })
+  }, []);
+
+  let stringUserId = localStorage.getItem("userId");
+  let userId: number;
+  if (stringUserId) {
     userId = parseInt(stringUserId);
   }
 
-  
-  useEffect(()=>{
-    fetchServices();
-  },[])
-
   return (
-    <div className="grid grid-cols-12 overflow-hidden w-full m-0 ">
-      {messageBoxOn ? <MessageBox /> : null}  
+    <div className="sm:grid grid-cols-12 flex flex-col overflow-hidden w-full m-0 h-screen">
       {/* SideBar */}
-      <div className="col-span-2 bg-[#E4E4E4] h-full w-full drop-shadow-lg p-4 mx-auto">
-        {/* Skill Level Block */}
-        <div className="text-[#0B2638] mt-4">STATUS</div>
-        <div className = {'w-[90%] flex flex-col'}>
-          <div className="flex items-center py-1">
-            <input type = {'checkbox'} className = "size-7 outline-none mr-1" id = "box1" name =  {"box1"}></input>
-            <label htmlFor = "box1" className = {'text-lg'}>Pending</label>
-          </div>
-          <div className="flex items-center py-1">
-            <input type = {'checkbox'} className = "size-7 outline-none mr-1" id = "box2" name =  {"box2"}></input>
-            <label htmlFor = "box2" className = {'text-lg'}>Completed</label>
-          </div>
-          <div className="flex items-center py-1">
-            <input type = {'checkbox'} className = "size-7 outline-none mr-1" id = "box3" name =  {"box3"}></input>
-            <label htmlFor = "box3" className = {'text-lg'}>Cancelled</label>
-          </div>
-          
-        </div>
+      <div className={`col-span-2  bg-[#E4E4E4] h-full w-full drop-shadow-lg p-3 mx-auto overflow-hidden transition-all duration-100 ${filterOpen ? "opacity-100 max-h-full":"opacity-0 max-h-0"}`}>
+        {/* Search */}
+        <div className="text-[#0B2638] mt-4">SEARCH</div>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="w-[90%] px-2 py-1 outline-none rounded-sm"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
 
         {/* Status */}
-        <div className="text-[#0B2638] mt-4">Proficiency Level</div>
-        <div className = {'w-[90%]'}>
-          <select className = {'px-2 py-1 outline-none w-full rounded-sm'} onChange={(e:ChangeEvent<HTMLSelectElement>)=>filterServices(e.target.value)}>
-            <option value="">ALL</option>
-            <option value="BEGINNER">Beginner</option>
-            <option value="INTERMEDIATE">Intermediate</option>
-            <option value="ADVANCED">Advanced</option>
-          </select>
+        <div className="text-[#0B2638] mt-4">STATUS</div>
+        <div className="w-[90%] flex flex-col">
+          {["Pending", "Completed", "Cancelled"].map((status) => (
+            <div key={status} className="flex items-center py-1">
+              <input
+                type="checkbox"
+                className="size-5 outline-none mr-1"
+                id={status}
+                checked={selectedStatus.includes(status)}
+                onChange={() => toggleStatus(status)}
+              />
+              <label htmlFor={status} className="text-base">{status}</label>
+            </div>
+          ))}
         </div>
 
-        {/* Category */}
-        <div className="text-[#0B2638] mt-4">CATEGORY</div>
-        <div className = {'w-[90%]'}>
-          <select className = {'px-2 py-1 outline-none w-full rounded-sm'}>
-              <option value="0">Select car:</option>
-              <option value="1">Audi</option>
-              <option value="2">BMW</option>
-              <option value="3">Citroen</option>
-          </select>
-        </div>
+        {/* Proficiency Level */}
+        <div className="text-[#0B2638] mt-4">PROFICIENCY LEVEL</div>
+        <select
+          className="px-2 py-1 outline-none w-full rounded-sm"
+          onChange={(e) => setSelectedProficiency(e.target.value)}
+          value={selectedProficiency}
+        >
+        <option value="">ALL</option>
+        <option value="BEGINNER">Beginner</option>
+        <option value="INTERMEDIATE">Intermediate</option>
+        <option value="ADVANCED">Advanced</option>
+        </select>
       </div>
-      {/* Cards */}
-      <div className="col-span-10 p-4 bg-[#E4E4E4] h-full w-full justify-start flex flex-wrap ">
-        {response?.map(( item , index )=>{
-          if(item.user.id != userId ){
-            return<JobCard
-              clickFunction = {openService}
-              key = {index}
-              createdAt = {item.createdAt}
-              requesterId = {item.requesterId}
-              tokenPrice={item.tokenPrice}
-              skillId = {item.skillId}
-              status = {item.status}
-              updatedAt = {item.updatedAt}
-              user = {item.user}
-              skill = {item.skill}
-              id = {item.id}
-              description= {item.description}
-            ></JobCard>
+      <button className = {'p-1 bg-[#E4E4E4] w-full justify-center flex sm:hidden'} onClick = {()=>setFilterOpen((c)=>!c)}><ArrowIcon/></button>
+
+      {/* Cards Section */}
+      <div className="col-span-10 p-4 bg-[#E4E4E4] h-full w-full justify-center sm:justify-start flex flex-wrap">
+        {response?.map((item, index) => {
+          if (item.user.id !== userId) {
+            return (
+              <JobCard
+                clickFunction={navigate}
+                key={index}
+                createdAt={item.createdAt}
+                requesterId={item.requesterId}
+                tokenPrice={item.tokenPrice}
+                skillId={item.skillId}
+                status={item.status}
+                updatedAt={item.updatedAt}
+                user={item.user}
+                skill={item.skill}
+                id={item.id}
+                description={item.description}
+              />
+            );
           }
-        }
-        )}
-        
+        })}
       </div>
     </div>
   );

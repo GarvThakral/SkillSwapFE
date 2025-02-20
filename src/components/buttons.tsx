@@ -15,7 +15,7 @@ const buttonStyles = {
 
 export function Button(props:ButtonProps){
     return(
-        <div className = {`p-2  w-32 flex justify-center items-center rounded-lg ${buttonStyles[props.style]}`} onClick={props.onclick}>
+        <div className = {`p-2 w-28 flex justify-center items-center rounded-lg ${buttonStyles[props.style]} hover:scale-[102%] duration-300`} onClick={props.onclick}>
             <button>{props.text}{props.icon}</button>
         </div>
     )

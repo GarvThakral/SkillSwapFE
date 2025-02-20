@@ -1,6 +1,9 @@
 import axios from "axios";
 import { useRef, useState } from "react";
 import {  useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { loaderState } from "../recoil/atoms";
+import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,10 +13,11 @@ export function SignIn(){
     console.log(setUsernameError)
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
-
-    const location = useNavigate();
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
+    const navigate = useNavigate();
 
     async function signinUser(){
+        setIsLoading(true);
         if(usernameRef.current && passwordRef.current){
             if(usernameRef.current.value.length == 0 || passwordRef.current.value.length == 0){
                 if(passwordRef.current.value.length == 0){
@@ -31,12 +35,15 @@ export function SignIn(){
             })
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userId', response.data.userId);
-            location('/skills')
+            setIsLoading(false);
+
+            navigate('/skills')
 
         }
     }
     return(
         <div className = {'h-screen overflow-hidden flex items-center justify-center'}>
+            {isLoading ? <Loader/>:null}
             <div className = "w-[500px] h-[600px] shadow-2xl flex flex-col items-center justify-between p-3">
                 <span className = "text-3xl border-b-2 p-2 px-3">Sign up</span>
                 <span className = "text-md">Sign up to continue</span>

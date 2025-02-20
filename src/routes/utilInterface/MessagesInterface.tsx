@@ -6,5 +6,11 @@ export interface MessageInterface{
     content?: string,
     createdAt?: string
     type?: "REGULAR" | "MEETING",
-    meetingId?:string
+    meetingId?:string;
+    sender?:{
+        profilePicture:string;
+    }
+    receiver?:{
+        profilePicture:string;
+    }
 }

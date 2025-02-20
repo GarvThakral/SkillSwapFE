@@ -4,11 +4,12 @@ import { UserMessage } from "../routes/utilInterface/UserMessageInterface";
 import { BackButtonIcon } from "./backButton";
 import { SendButtonIcon } from "./sendButton";
 import { MessageInterface } from "../routes/utilInterface/MessagesInterface";
-import { meetingReceiverId } from "../recoil/atoms";
+import { loaderState, meetingReceiverId } from "../recoil/atoms";
 import { VideoCallIcon } from "./videoCallIcon";
 import { Link, useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { TransactionInterface } from "../routes/utilInterface/TransactionInterface";
+import Loader from "./loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -24,18 +25,21 @@ export function MessageBox() {
     const [ transactionDetails , setTransactionDetails ] = useState<TransactionInterface | null>(null);
 
     const navigate = useNavigate();
-
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
     const userId = parseInt(localStorage.getItem('userId') || "0");
     const inputRef = useRef<HTMLInputElement>(null);
 
     async function fetchUserNames() {
+        setIsLoading(true)
         const response = await axios.get(`${API_URL}/messages/users`, {
             headers: { token }
         });
         setUserProfiles(response.data.userDetails);
+        setIsLoading(false)
     }
 
     async function startMeeting(){
+        setIsLoading(true)
         const response = await axios.post(`${API_URL}/transaction/pending`,
             {
                 user2Id:receiverId
@@ -48,8 +52,10 @@ export function MessageBox() {
         );
         if(response.status == 200){
             setTransactionDetails(response.data.transaction);            
+            setIsLoading(false)
             navigate("/video")
         }else{
+            setIsLoading(false)
         }
     }
     async function completeTransaction(){
@@ -155,57 +161,72 @@ export function MessageBox() {
     }, []);
 
     return (
-        <div className="absolute right-6 bottom-6 w-96 h-96 bg-slate-300 z-30 flex flex-col">
-            <div className="h-12 flex justify-center w-full">
+        <div className="absolute right-6 bottom-6 w-96 h-[400px] bg-slate-100 drop-shadow-lg z-30 flex flex-col rounded-xl">
+            {isLoading ? <Loader/> : null}
+    
+            {/* Header Section - 10% Height */}
+            <div className="h-[10%] flex justify-center w-full p-2">
                 {userClicked && (
                     <span className="self-center absolute left-3 cursor-pointer"
                         onClick={() => {
                             setUserClicked(false);
                             setCurrentUsername('');
                             setReceiverId(null);
+                            setMessages([])
                         }}>
                         <BackButtonIcon />
                     </span>
                 )}
-
-                <span className="self-center">{userClicked ? currentUsername : "Messages"}</span>
-
+                <div className="self-center flex items-center">
+                    {userClicked ? <img 
+                        src={userProfiles?.find(user => user.username === currentUsername)?.profilePicture} 
+                        className="size-8 rounded-full"
+                        alt="profile"
+                    /> : null}
+                    <span>{userClicked ? currentUsername : "Messages"}</span>
+                </div>
+    
                 {userClicked && (
                     <span className="self-center absolute right-3 cursor-pointer">
-                        <div onClick = {()=>startMeeting()}>
+                        <div onClick={()=>startMeeting()}>
                             <VideoCallIcon />
                         </div>
                     </span>
                 )}
             </div>
-
+    
             {userClicked ? (
                 <div className="flex flex-col h-full">
-                    <div className="h-[80%] flex flex-col overflow-y-auto">
+    
+                    {/* Chat Messages Section - 75% Height */}
+                    <div className="h-[75%] flex flex-col overflow-auto">
                         {messages.map((item, index) => (
                             item.type === "MEETING" ? (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end ml-20 text-green-700" : "mr-20 text-green-700"}`}>
+                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end ml-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12" : "mr-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12"}`}>
                                     <Link to={`/video/join/${item.meetingId}`}>
                                         <span>{item.content}</span>
                                     </Link>
                                 </div>
                             ) : (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end bg-blue-500 text-white p-2 rounded-lg" : "bg-gray-200 p-2 rounded-lg"}`}>
+                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end bg-blue-500 text-white px-2 py-1 rounded-lg m-1 mx-2" : "bg-gray-200 px-2 py-1 rounded-lg m-1 mx-2"}`}>
                                     {item.content}
                                 </div>
                             )
                         ))}
                     </div>
-
+    
+                    {/* Input Section - 15% Height */}
                     <div className="h-[15%] flex justify-around items-center p-2">
-                        <input className="w-80 p-1" ref={inputRef} />
-                        <SendButtonIcon onclick={sendMessage} />
+                        <input className="w-80 rounded-xl p-2 border-2" ref={inputRef} placeholder="Type your message here"/>
+                        <span className="bg-blue-600 bg-gradient-to-b from-blue-200 to-indigo-600 p-2 rounded-[50%]">
+                            <SendButtonIcon onclick={sendMessage} />
+                        </span>
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-start w-full p-3">
+                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white h-[80%] rounded-b-xl">
                     {userProfiles?.map((item) => (
-                        <div key={item.id} className="flex cursor-pointer" onClick={() => openUserChats(item.username, item.id)}>
+                        <div key={item.id} className="flex cursor-pointer p-2" onClick={() => openUserChats(item.username, item.id)}>
                             <img src={item.profilePicture} className="size-8 rounded-full" alt="profile" />
                             <span className="ml-2">{item.username}</span>
                         </div>
@@ -214,4 +235,5 @@ export function MessageBox() {
             )}
         </div>
     );
+    
 }

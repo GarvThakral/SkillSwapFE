@@ -1,10 +1,11 @@
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { useEffect, useRef, useState } from "react";
-import { receiverId, skillId, tradeRequestRecieverTokens } from "../recoil/atoms";
+import { loaderState, receiverId, skillId, tradeRequestRecieverTokens } from "../recoil/atoms";
 import { useRecoilState } from "recoil";
 import { SkillProps } from "./utilInterface/SkillInterface";
 import { SearchIcon } from "../components/searchIcon";
+import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -22,6 +23,7 @@ export function TradeService() {
     const [existingSkills, setExistingSkills] = useState<SkillProps[]>([]);
     const [filteredSkills, setFilteredSkills] = useState<SkillProps[]>([]);
     const [searching, setSearching] = useState(false);
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
 
     useEffect(() => {
         axios.get(`${API_URL}/skill`).then(response => {
@@ -35,9 +37,11 @@ export function TradeService() {
     }
 
     async function createTradeRequest() {
+        setIsLoading(true);
         const skillExists = existingSkills.some(skill => skill.title === inputRef.current?.value);
         if (!skillExists) {
             alert("Invalid skill selected");
+            setIsLoading(false);
             return;
         }
 
@@ -50,6 +54,7 @@ export function TradeService() {
             const userTokens = await axios.post(`${API_URL}/user/tokens`, { userId });
             if (userTokens.data.UsersTokens.tokens < netAmount) {
                 alert("You don't have enough tokens to make this transaction");
+                setIsLoading(false);
                 return;
             }
         }
@@ -65,10 +70,13 @@ export function TradeService() {
         }, {
             headers: { token },
         });
+        setIsLoading(false);
+
     }
 
     return (
         <div className="min-h-screen w-screen flex flex-col items-center space-y-4">
+            {isLoading ? <Loader/>:null}
             <span>What skill would you like to offer?</span>
             <div className="h-18 w-64 flex items-center p-2 rounded-2xl bg-blue-400 bg-opacity-20 space-x-3">
                 <SearchIcon />

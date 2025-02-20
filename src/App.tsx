@@ -13,13 +13,20 @@ import { TradeService } from './routes/tradeRequest';
 import { Notifications } from './routes/notifications';
 import Meeting from './routes/CreateMeeting';
 import { JoinMeeting } from './routes/joinMeeting';
+import { messageButtonState, sideBarState } from './recoil/atoms';
+import { MessageBox } from './components/messageBox';
+import { useRecoilValue } from 'recoil';
+import { BuyTokens } from './routes/BuyTokens';
+import { SideBar } from './components/sideBar';
 
 function App() {
   return (
     <RecoilRoot>
-      <div className="h-screen">
+      <div className="h-screen w-screen overflow-x-auto">
         <BrowserRouter>
           <NavBarWithConditional />
+          <MessageBoxWithRecoil />
+          <SideBarWithRecoil />
           <Routes>
             <Route path="/create" element={<CreateService />} />
             <Route path="/teachrequest" element={<TeachService />} />
@@ -32,7 +39,7 @@ function App() {
             <Route path="/skills/:id" element={<Service />} />
             <Route path="/video" element={<Meeting />} />
             <Route path="/video/join/:id" element={<JoinMeeting />} />
-            
+            <Route path="/purchase" element={<BuyTokens />} />
           </Routes>
         </BrowserRouter>
       </div>
@@ -40,12 +47,19 @@ function App() {
   );
 }
 
+function MessageBoxWithRecoil() {
+  const messageBoxOn = useRecoilValue(messageButtonState);
+  return messageBoxOn ? <MessageBox /> : null;
+}
+function SideBarWithRecoil() {
+  const sideBar = useRecoilValue(sideBarState);
+  return sideBar ? <SideBar /> : null;
+}
+
 function NavBarWithConditional() {
   const location = useLocation();
-
   return (
     <>
-      {/* Conditionally render NavBar based on the route */}
       {location.pathname !== '/signin' && location.pathname !== '/signup' && <NavBar />}
     </>
   );

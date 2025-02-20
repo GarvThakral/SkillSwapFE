@@ -3,6 +3,10 @@ import { SearchIcon } from "../components/searchIcon";
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { SkillProps } from "./utilInterface/SkillInterface";
+import Loader from "../components/loader";
+import { useRecoilState } from "recoil";
+import { loaderState } from "../recoil/atoms";
+import { useNavigate } from "react-router-dom";
 const API_URL = import.meta.env.VITE_API_URL
 
 export function CreateService(){
@@ -16,6 +20,8 @@ export function CreateService(){
     const inputRef = useRef<HTMLInputElement>(null);
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const [ skillExists , setSkillExists ] = useState(false);
+    const navigate = useNavigate();
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState);
 
     async function fetchSkills(){
         const response = await axios.get(`${API_URL}/skill`);
@@ -45,6 +51,7 @@ export function CreateService(){
         }
     }
     async function create(){
+        setIsLoading(true);
         const token = localStorage.getItem('token')
         await axios.post(`${API_URL}/service`,
             {
@@ -58,6 +65,8 @@ export function CreateService(){
                 },
             }
         )
+        setIsLoading(false);
+        navigate('/skills')
     }
     useEffect(()=>{
         fetchSkills();
@@ -66,6 +75,7 @@ export function CreateService(){
 
     return(
     <div className = {'min-h-screen flex justify-center items-center'}>
+        {isLoading ? <Loader/>:null}
         <div className = {`flex flex-col space-y-4 items-center`}>
             {skillExists ?
             <div className = {`flex flex-col space-y-4 items-center`}>

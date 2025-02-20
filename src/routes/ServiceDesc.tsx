@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Button } from "../components/buttons";
-
+import { useRecoilState } from "recoil";
+import { loaderState } from "../recoil/atoms";
+import Loader from "../components/loader";
 const API_URL = import.meta.env.VITE_API_URL
 
 interface SkillProps{
@@ -18,12 +20,14 @@ export function ServiceDesc(){
     const [ filteredSkills , setFilteredSkills ] = useState<SkillProps[] | null>(null);
     const [ skillError , setSkillError ] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
     async function fetchSkills(){
         const response = await axios.get(`${API_URL}/skill`);
         await setExistingSkills(response.data.skills);
         await setFilteredSkills(response.data.skills);
     }
     async function nextScreen(){
+        setIsLoading(true);
         let skillArray = await axios.get(`${API_URL}/skill`);
         let skillsArray = skillArray.data.skills;
         let skillExists = false;
@@ -38,6 +42,7 @@ export function ServiceDesc(){
         }else{
             setSkillError(true);
         }
+        setIsLoading(false);
     }
     useEffect(()=>{
         fetchSkills();
@@ -46,6 +51,7 @@ export function ServiceDesc(){
 
     return(
     <div className = {'min-h-screen flex justify-center items-center'}>
+        {isLoading ? <Loader/>:null}
         <div className = {`flex flex-col space-y-4 items-center`}>
             <span className = {'text-4xl'}>Add a description.</span>
             <div className = {'h-40 w-[500px] flex justify-center items-center rounded-2xl bg-blue-400 bg-opacity-20 space-x-3'}>
