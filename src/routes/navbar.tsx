@@ -1,37 +1,33 @@
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { Button } from "../components/buttons";
-import { Input } from "../components/input";
-import { messageButtonState, originalResponseState, responseState, sideBarState, signInState, userTokens } from "../recoil/atoms";
-import {   useEffect, useState } from "react";
+import { messageButtonState,  sideBarState, signInState, userTokens } from "../recoil/atoms";
+import {   useEffect } from "react";
 import { Link, useLocation } from 'react-router-dom'
 import { NotificationBell } from "../components/notification";
 import { MessageButton } from "../components/messageButtonIcon";
 import axios from "axios";
 import { BurgerIcon } from "../components/burgerIcon";
-import { SideBar } from "../components/sideBar";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function NavBar(){
   const [signedIn,setIsSignedIn] = useRecoilState<boolean>(signInState);
-  const setResponse = useSetRecoilState(responseState);
-  const [originalResponse] = useRecoilState(originalResponseState);
   const location = useLocation();
   const  setMessageButtonOn  = useSetRecoilState(messageButtonState);
   const [ userToken , setUserTokens ] = useRecoilState(userTokens);
   const setSideBarOpen  = useSetRecoilState(sideBarState);
-  async function searchSkills(searchParam:string){
-    if(searchParam.length === 0){
-      setResponse(originalResponse);
-      return
-    }
-    const filteredResponse = originalResponse?.filter((item) =>
-      item.skill.title.toLowerCase().includes(searchParam.toLowerCase())
-    );
+  // async function searchSkills(searchParam:string){
+  //   if(searchParam.length === 0){
+  //     setResponse(originalResponse);
+  //     return
+  //   }
+  //   const filteredResponse = originalResponse?.filter((item) =>
+  //     item.skill.title.toLowerCase().includes(searchParam.toLowerCase())
+  //   );
   
-    setResponse(filteredResponse ?? null);
+  //   setResponse(filteredResponse ?? null);
 
-  }
+  // }
   async function fetchUserToken(){
     const userId = parseInt(localStorage.getItem("userId") ?? '0');
     const response = await axios.post(`${API_URL}/user/tokens`,{

@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import { JobCard } from "../components/jobCard";
 import axios from "axios";
 import { useRecoilState } from "recoil";
@@ -13,12 +13,10 @@ export function SkillTrade() {
   const [originalResponse, setOriginalResponse] = useRecoilState(originalResponseState);
   const [ filterOpen , setFilterOpen ] = useState(true);
 
-  // State for filters
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [selectedProficiency, setSelectedProficiency] = useState<string>("");
 
-  // Fetch Data from API
   async function fetchServices() {
     const token = localStorage.getItem("token");
     const res = await axios.get(`${API_URL}/service`, {
@@ -26,32 +24,28 @@ export function SkillTrade() {
     });
 
     if (res) {
-      setOriginalResponse(res.data.serviceRequests); // Store the original
+      setOriginalResponse(res.data.serviceRequests);
       setResponse(res.data.serviceRequests);
     }
   }
 
-  // Apply filters dynamically
   function applyFilters() {
     let filteredResponse = originalResponse;
 
-    // Apply Search Filter
     if (searchQuery.trim() !== "") {
-      filteredResponse = filteredResponse?.filter((item) =>
+      filteredResponse = (filteredResponse ?? [])?.filter((item) =>
         item.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Apply Status Filter (Multiple Selection)
     if (selectedStatus.length > 0) {
-      filteredResponse = filteredResponse?.filter((item) =>
+      filteredResponse = (filteredResponse ?? [])?.filter((item) =>
         selectedStatus.includes(item.status)
       );
     }
 
-    // Apply Proficiency Level Filter
     if (selectedProficiency !== "") {
-      filteredResponse = filteredResponse?.filter(
+      filteredResponse = (filteredResponse ?? [])?.filter(
         (item) => item.skill.proficiencyLevel === selectedProficiency
       );
     }
@@ -71,7 +65,7 @@ export function SkillTrade() {
 
   useEffect(() => {
     fetchServices();
-    window.addEventListener('resize', (e)=>{
+    window.addEventListener('resize', ()=>{
       if(window.innerWidth < 640){
         if(filterOpen){
           setFilterOpen(false);
@@ -92,7 +86,7 @@ export function SkillTrade() {
   }
 
   return (
-    <div className="sm:grid grid-cols-12 flex flex-col overflow-hidden w-full m-0 h-screen">
+    <div className="sm:grid grid-cols-12 flex flex-col overflow-hidden w-full m-0 min-h-screen">
       {/* SideBar */}
       <div className={`col-span-2  bg-[#E4E4E4] h-full w-full drop-shadow-lg p-3 mx-auto overflow-hidden transition-all duration-100 ${filterOpen ? "opacity-100 max-h-full":"opacity-0 max-h-0"}`}>
         {/* Search */}
