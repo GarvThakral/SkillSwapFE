@@ -20,6 +20,7 @@ import { BuyTokens } from './routes/BuyTokens';
 import { SideBar } from './components/sideBar';
 
 function App() {
+  console.log("Wassup")
   return (
     <RecoilRoot>
       <div className="h-screen w-screen overflow-x-auto">
