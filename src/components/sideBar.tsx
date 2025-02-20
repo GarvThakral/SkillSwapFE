@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { NotificationBell } from "./notification";
 import { MessageButton } from "./messageButtonIcon";
-import { messageButtonState, originalResponseState, responseState, sideBarState, userTokens } from "../recoil/atoms";
+import { messageButtonState, sideBarState, userTokens } from "../recoil/atoms";
 import { Button } from "./buttons";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
@@ -11,8 +11,6 @@ const API_URL = import.meta.env.VITE_API_URL
 export function SideBar(){
     const [ signedIn , setSignedIn ] = useState(false);
     const  setMessageButtonOn  = useSetRecoilState(messageButtonState);
-    const setResponse = useSetRecoilState(responseState);
-    const [originalResponse] = useRecoilState(originalResponseState);
     const [ userToken , setUserTokens ] = useRecoilState(userTokens);
     const setSideBarOpen  = useSetRecoilState(sideBarState);
     
