@@ -1,36 +1,55 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [react()],
   build: {
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Create separate chunks for major dependencies
+        manualChunks(id) {
+          // Dyte packages
+          if (id.includes('@dytesdk/react-ui-kit')) {
+            return 'dyte-ui-kit';
+          }
+          if (id.includes('@dytesdk/web-core')) {
+            return 'dyte-web-core';
+          }
+          if (id.includes('@dytesdk/react-web-core')) {
+            return 'dyte-react-core';
+          }
+          
+          // Split major third-party dependencies
           if (id.includes('node_modules')) {
-            if (id.includes('@dytesdk/react-web-core')) {
-              return 'dyte-core';
-            }
-            if (id.includes('@dytesdk/react-ui-kit') || id.includes('@dytesdk/ui-kit')) {
-              return 'dyte-ui';
-            }
             if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
+              return 'vendor-react';
             }
-            return 'vendor'; // Other dependencies
+            if (id.includes('styled-components')) {
+              return 'vendor-styled';
+            }
+            if (id.includes('recoil')) {
+              return 'vendor-recoil';
+            }
+            if (id.includes('@jitsi')) {
+              return 'vendor-jitsi';
+            }
+            if (id.includes('peerjs') || id.includes('ws')) {
+              return 'vendor-networking';
+            }
+            // All remaining node_modules
+            return 'vendor-other';
           }
         }
       }
     },
-    chunkSizeWarningLimit: 1600,
+    chunkSizeWarningLimit: 1200,
     minify: 'esbuild',
-    sourcemap: false, // Disable sourcemaps for production to reduce file size
+    target: 'esnext'
   },
   optimizeDeps: {
     include: [
+      '@dytesdk/react-ui-kit',
       '@dytesdk/react-web-core',
-      '@dytesdk/react-ui-kit'
+      '@dytesdk/web-core',
+      'styled-components',
+      'recoil'
     ]
   }
 });
