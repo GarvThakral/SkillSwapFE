@@ -1,20 +1,15 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ],
-    "routes": [
-      { "handle": "filesystem" },
-      { "src": "/(.*)", "dest": "/index.html" }
-    ],
-    "builds": [
-      {
-        "src": "package.json",
-        "use": "@vercel/static-build",
-        "config": { "zeroConfig": true }
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": { "zeroConfig": true }
+    }
+  ]
+}
