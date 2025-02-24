@@ -74,23 +74,23 @@ export function CreateService(){
     
 
     return(
-    <div className = {'min-h-screen flex justify-center items-center'}>
+    <div className = {`min-h-screen flex justify-center items-center font-['DM_sans']`}>
         {isLoading ? <Loader/>:null}
         <div className = {`flex flex-col space-y-4 items-center`}>
             {skillExists ?
             <div className = {`flex flex-col space-y-4 items-center`}>
-                <span className = {'text-4xl'}>Add a description.</span>
-                <div className = {'h-40 w-[500px] flex justify-center items-center rounded-2xl bg-blue-400 bg-opacity-20 space-x-3 p-2'}>
+                <span className = {'text-3xl'}>How much are you willing to pay for the skill ?</span>
+                <input type = "number" defaultValue={50} className = {'p-2 border-2 rounded-md w-20'} ref = {priceRef}></input>
+                <span className = {'text-2xl'}>Add a description.</span>
+                <div className = {'h-40 w-[500px] flex justify-center items-center rounded-sm border-2 bg-opacity-20 space-x-3 p-2'}>
                     <textarea ref = {textAreaRef} className =  "h-36 w-[490px] bg-transparent outline-none placeholder-slate-500" placeholder = "(eg)..Looking for a react developer to teach me react basics."></textarea>
                 </div>
-                <span className = {'text-3xl'}>How much are you willing to pay for the skill ?</span>
-                <input type = "number" defaultValue={50} className = {'p-3 border-2 w-20'} ref = {priceRef}></input>
                 {textAreaRef.current?.value.length != 0 ? <Button text="Next" style = "Primary" onclick = {()=>create()}/>:null}
             </div>
             :
             <div className = {`flex flex-col space-y-4 items-center`}> 
-                <span className = {'text-4xl'}>What skill are you looking for ?</span>
-                <div className = {'h-18 w-64 flex justify-center items-center p-2 rounded-2xl bg-blue-400 bg-opacity-20 space-x-3'}>
+                <span className = {'text-3xl'}>What skill are you looking for ?</span>
+                <div className = {'h-18 w-64 flex justify-center items-center '}>
                     <SearchIcon/>
                     <input  
                         onFocus={()=>setSearching((c)=>!c)}
@@ -105,10 +105,10 @@ export function CreateService(){
                 {inputRef.current?.value.length != 0 ? <Button text="Next" style = "Primary" onclick = {()=>nextScreen()}/>:null}
                 {skillExists ? <span>"{skillDesc}"</span>:null}
                 {searching ?
-                    <div className = {'overflow-y-auto h-28 border-2 w-64 p-3'}>
+                    <div className = {'overflow-y-auto h-28 border-2 min-w-96 p-3 rounded-xl'}>
                         <div>
                             {filteredSkills?.map((item,index)=>{
-                                return <div key = {index}  onClick = {()=>{
+                                return <div key = {index} className={'hover:bg-gray-300'}  onClick = {()=>{
                                     inputRef.current!.value = item.title;
                                     setSearching((c)=>!c)}}>{item.title}
                                     </div>

@@ -99,11 +99,16 @@ export function NavBar(){
       
       {signedIn ?
       <Link to = "/">
-        <Button text="Log out" style ="Tertiary" onclick={()=>logUserOut()}/>
+        <Button text="Log out" style ="Primary" onclick={()=>logUserOut()}/>
       </Link> :
-      <Link to = "/signup">
-        <Button text="Sign Up" style ="Tertiary"/>
-      </Link> 
+      <div className =  {'flex'}>
+        <Link to = "/signup">
+          <Button text="Login" style ="Tertiary"/>
+        </Link> 
+        <Link to = "/signup">
+          <Button text="Create Account" style ="Secondary"/>
+        </Link>
+      </div> 
       }
     </div>
     <div onClick = {()=>{setSideBarOpen((c)=>!c) ; setMessageButtonOn(false)}} className = {'md:hidden'}>
