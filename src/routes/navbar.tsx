@@ -54,9 +54,9 @@ export function NavBar(){
   }
 
   return(
-  <div className = {'h-16 bg-[#0B2638] flex items-center justify-between text-white px-12 overflow-hidden '}>
+  <div className = {'h-16 flex items-center justify-between text-black px-12 overflow-hidden border-b'}>
     <img src = "swap.png" className = "size-14"></img>
-    <div className = {'items-center text-xs lg:text-sm  hidden md:flex lg:space-x-12 space-x-6'}>
+    <div className = {`items-center text-xs lg:text-lg  hidden md:flex lg:space-x-12 space-x-6 font-['DM_sans'] `}>
       {location.pathname !== '/skills' ? 
         <Link to = "/skills">
           <span>Browse skills</span>
