@@ -76,6 +76,7 @@ export function NavBar(){
       { signedIn ? 
         <div>
         <MessageButton 
+          size = {6}
           onClick={() => {
             setMessageButtonOn((c) => !c);
             setSideBarOpen(false);

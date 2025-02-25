@@ -41,10 +41,12 @@ export function Notifications(){
     
 
     return(
-        <div className = {'flex items-center pt-16 h-screen flex-col'}>
+        <div className = {`flex items-center pt-16 h-screen flex-col font-['DM_sans']`}>
             {/* {isLoading ? <Loader/> :null} */}
-            <span>Notifications</span>
-            <div className = {'w-[50%] min-w-32 min-h-32 border-2  rounded-lg'}>
+            
+            <span className = {'md:w-[80%] w-[90%] ml-2 font-bold text-xl '}>Notifications</span>
+            <div className = {'md:w-[80%] w-[90%] min-w-32 min-h-32 border-2 rounded-lg p-4 flex flex-col'}>
+                {allNotifications?.length == 0 ? <span className ={'self-center my-auto'}>No notifications yet .....</span>:null}
                 {allNotifications?.map((item)=>{
                     if(item.status == "PENDING"){
                         return <NotificationCard {...item}/>

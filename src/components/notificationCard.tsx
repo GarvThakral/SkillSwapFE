@@ -2,6 +2,7 @@ import axios from "axios";
 import { TeachNotification ,TradeNotification } from "../routes/utilInterface/NotificationInterface";
 import { allNotificationsArray } from "../recoil/atoms";
 import { useRecoilState } from "recoil";
+import { Button } from "./buttons";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -169,24 +170,42 @@ export function NotificationCard(NotificationProps: TeachNotification | TradeNot
     };
     
     return(
-        <div className = {'w-[90%] h-[10%] flex justify-between bg-slate-300 p-2 rounded-xl mb-2'}>
-            <div className = {'flex items-center'}>
-                <img src = {NotificationProps.sender?.profilePicture} className = {'rounded-[50%] size-16'}></img>
-                {NotificationProps.type == "TEACH" ? 
-                <div className = {'flex items-center'}>
-                    <span className = "pl-1">{NotificationProps.sender?.username} wants to you teach you </span>
-                    <span className = {'p-1 text-blue-600'}>{NotificationProps.skill?.title} </span>
-                    <span className = {'flex items-center'}>in exchange for {NotificationProps.recieverToken.toString()} <img src = "token.svg" className = {'size-6 inline'}></img></span>
-                </div> :
-                 <div>
-                    <span className = "pl-1">{NotificationProps.sender?.username} wants to you teach you</span>
-                    <span className = {'p-1 text-blue-600'}>{NotificationProps.senderSkill?.title} For {NotificationProps.senderToken.toString()}<img src = "token.svg" className = {'size-6 inline'}></img><span className = {'text-black'}> in exchange for </span>{NotificationProps.receiverSkill?.title} {NotificationProps.recieverToken}<img src = "coin.png" className = {'size-6 inline'}></img> ( )</span>
-                </div>}
+        <div className = { `min-h-16 flex flex-col items-center md:flex-row justify-between p-2 rounded-xl mb-2 font-['DM_sans'] border-2 shadow-sm`}>
+            <div className="flex items-center gap-2 text-clip self-start">
+            <img 
+                src={NotificationProps.sender?.profilePicture} 
+                className="rounded-full size-12 shadow-lg border-2 border-gray-400"
+            />
 
+            <span className="flex items-center gap-1 flex-wrap">
+                {NotificationProps.sender?.username} wants to teach you
+                <span className="font-semibold">{NotificationProps.type === "TEACH" ? NotificationProps.skill?.title : NotificationProps.senderSkill?.title}</span>
+
+                {NotificationProps.type !== "TEACH" && (
+                <>
+                    for 
+                    <img src="token.svg" className="size-4 inline" />
+                    {NotificationProps.senderToken} 
+                    <span className="text-black"> in exchange for </span>
+                    <span className="font-semibold ">{NotificationProps.receiverSkill?.title}</span> 
+                    <img src="token.svg" className="size-4 inline " />
+                    {NotificationProps.recieverToken}
+                </>
+                )}
+
+                {NotificationProps.type === "TEACH" && (
+                <>
+                    in exchange for 
+                    <img src="token.svg" className="size-4 inline" />
+                    {NotificationProps.recieverToken} 
+                </>
+                )}
+            </span>
             </div>
-            <div className = {'flex items-center space-x-4'}>
-                <button className = {' bg-green-500 p-3 rounded-lg'} onClick={()=>acceptRequest(NotificationProps.type , NotificationProps?.id)}>Accept</button>
-                <button className = {' bg-red-500 text-white p-3 rounded-lg'} onClick={()=>denyRequest(NotificationProps.type , NotificationProps?.id)}>Deny</button>
+
+            <div className = {'flex items-center space-x-4 '}>
+                <Button style = {"Primary"}  onclick={()=>acceptRequest(NotificationProps.type , NotificationProps?.id)} text = {"Accept"}/>
+                <Button style = {"Secondary"}  onclick={()=>denyRequest(NotificationProps.type , NotificationProps?.id)} text = {"Deny"}/>
             </div>
         </div>
     );

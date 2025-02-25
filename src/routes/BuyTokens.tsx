@@ -105,7 +105,7 @@ export function BuyTokens() {
                 className="border p-2 m-2"
             />
             <Button text="Purchase" style="Secondary" onclick={displayRazorpay} /> */}
-            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200 p-2`}>
+            <div className = {`w-[45%] h-[80%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200 p-2`}>
                 <div className = {'col-span-2  flex flex-col items-center bordeer-r-2 border-2 border-gray-400 border-r-0 rounded-l-xl'}>
                     <div className = {'flex flex-col items-center justify-center h-[60%] border-b-2 border-gray-400 w-full space-y-9'}>
                         <div className = {'text-2xl font-extrabold '}>
@@ -183,7 +183,7 @@ export function BuyTokens() {
                         <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 500 = ₹1999</span>
                         <Button style = "Primary" text = "Purchase package" onclick= {async ()=>{setAmount(1999);}}></Button>
                     </div>
-                    <div className = {'h-[50%] p-3 flex flex-col items-start justify-center'}>
+                    <div className = {'h-[50%] p-3 flex flex-col items-start justify-center space-y-5'}>
                         <span className = {'text-3xl'}></span>
                         <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><CreditCardIcon/>Buy Instantly</span>  Securely purchase tokens and add them to your wallet.</span>
                         <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><ExchangeIcon/> Trade & Learn</span>  Use tokens to request lessons or trade skills.</span>

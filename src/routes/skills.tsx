@@ -88,7 +88,7 @@ export function SkillTrade() {
   return (
     <div className="sm:grid grid-cols-12 flex flex-col overflow-hidden w-full m-0 min-h-screen">
       {/* SideBar */}
-      <div className={`col-span-2  bg-[#E4E4E4] h-full w-full drop-shadow-lg p-3 mx-auto overflow-hidden transition-all duration-100 ${filterOpen ? "opacity-100 max-h-full":"opacity-0 max-h-0"}`}>
+      <div className={`col-span-2  h-full w-full drop-shadow-lg shadow-lg  p-3 mx-auto overflow-hidden transition-all duration-100 ${filterOpen ? "opacity-100 max-h-full":"opacity-0 max-h-0"}`}>
         {/* Search */}
         <div className="text-[#0B2638] mt-4">SEARCH</div>
         <input
@@ -129,10 +129,10 @@ export function SkillTrade() {
         <option value="ADVANCED">Advanced</option>
         </select>
       </div>
-      <button className = {'p-1 bg-[#E4E4E4] w-full justify-center flex sm:hidden'} onClick = {()=>setFilterOpen((c)=>!c)}><ArrowIcon/></button>
+      <button className = {'p-1 w-full justify-center flex sm:hidden'} onClick = {()=>setFilterOpen((c)=>!c)}><ArrowIcon/></button>
 
       {/* Cards Section */}
-      <div className="col-span-10 p-4 bg-[#E4E4E4] h-full w-full justify-center sm:justify-start flex flex-wrap">
+      <div className="col-span-10 p-4 h-full w-full justify-center sm:justify-start flex flex-wrap">
         {response?.map((item, index) => {
           if (item.user.id !== userId) {
             return (

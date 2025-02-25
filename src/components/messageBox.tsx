@@ -207,8 +207,7 @@ export function MessageBox() {
             {userClicked ? (
                 <div className="flex flex-col h-full text-black bg-white">
     
-                    {/* Chat Messages Section - 75% Height */}
-                    <div className="h-[75%] flex flex-col overflow-auto bg-white">
+                    <div className="[85%] flex flex-col overflow-auto bg-white">
                     {messages.map((item, index) => {
                         // Get senderId from the nested sender object
                         const messageSenderId = item.sender?.id;

@@ -76,7 +76,7 @@ export function TradeService() {
 
     return (
         <div className="min-h-screen w-screen flex flex-col items-center space-y-4">
-            {isLoading ? <Loader/>:null}
+            {isLoading ? null:null}
             <span>What skill would you like to offer?</span>
             <div className="h-18 w-64 flex items-center p-2 rounded-2xl bg-blue-400 bg-opacity-20 space-x-3">
                 <SearchIcon />
