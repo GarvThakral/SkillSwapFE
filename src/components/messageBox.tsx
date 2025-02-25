@@ -28,6 +28,11 @@ export function MessageBox() {
     const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
     const userId = parseInt(localStorage.getItem('userId') || "0");
     const inputRef = useRef<HTMLInputElement>(null);
+    
+    // Debug log for userId
+    useEffect(() => {
+        console.log("Current userId:", userId, typeof userId);
+    }, [userId]);
 
     async function fetchUserNames() {
         setIsLoading(true)
@@ -109,6 +114,9 @@ export function MessageBox() {
             headers: { token }
         });
         setMessages(response.data.allMessages);
+        
+        // Debug log for fetched messages
+        console.log("Fetched messages:", response.data.allMessages);
 
         if (!socket || socket.readyState !== WebSocket.OPEN) {
             const newSocket = new WebSocket('ws://localhost:8080');
@@ -122,7 +130,7 @@ export function MessageBox() {
         
             newSocket.onmessage = (event) => {
                 const receivedMessage = JSON.parse(event.data);
-        
+                console.log("Received message:", receivedMessage);
                 setMessages(prevMessages => [...prevMessages, receivedMessage]);
             };
         
@@ -150,6 +158,7 @@ export function MessageBox() {
                 receiverId: receiverId,
                 content: inputRef.current.value,
             };
+            console.log("Sent message:", uiMessage);
             setMessages(prevMessages => [...prevMessages, uiMessage]);
 
             inputRef.current.value = "";
@@ -200,23 +209,35 @@ export function MessageBox() {
     
                     {/* Chat Messages Section - 75% Height */}
                     <div className="h-[75%] flex flex-col overflow-auto bg-white">
-                        {messages.map((item, index) => (
-                            item.type === "MEETING" ? (
-                                <div key={index} className={`max-w-[70%] ${userId === item.senderId 
-                                    ? "self-end bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12" 
-                                    : "self-start bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12"}`}>
-                                    <Link to={`/video/join/${item.meetingId}`}>
-                                        <span>{item.content}</span>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <div key={index} className={`max-w-[70%] ${userId === item.senderId 
-                                    ? "self-end bg-blue-500 text-white px-2 py-1 rounded-lg m-1 mx-2" 
-                                    : "self-start bg-gray-200 px-2 py-1 rounded-lg m-1 mx-2"}`}>
-                                    {item.content}
-                                </div>
-                            )
-                        ))}
+                    {messages.map((item, index) => {
+                        // Get senderId from the nested sender object
+                        const messageSenderId = item.sender?.id;
+                        
+                        // Compare userId with the sender id from the message
+                        const isSender = Number(userId) === Number(messageSenderId);
+                        
+                        console.log(`Message ${index}: type=${item.type}, isSender=${isSender}, userId=${userId}, messageSenderId=${messageSenderId}`);
+                        
+                        return item.type === "MEETING" ? (
+                            <div key={index} 
+                                style={{ alignSelf: isSender ? 'flex-end' : 'flex-start' }}
+                                className={`max-w-[70%] ${isSender 
+                                    ? "bg-purple-300 text-brown-700" 
+                                    : "bg-purple-300 text-brown-700"} rounded-lg px-2 py-1 m-1 mx-2 min-w-12`}>
+                                <Link to={`/video/join/${item.meetingId}`}>
+                                    <span>{item.content}</span>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div key={index} 
+                                style={{ alignSelf: isSender ? 'flex-end' : 'flex-start' }}
+                                className={`max-w-[70%] ${isSender 
+                                    ? "bg-blue-500 text-white" 
+                                    : "bg-gray-200"} px-2 py-1 rounded-lg m-1 mx-2`}>
+                                {item.content}
+                            </div>
+                        );
+                    })}
                     </div>
     
                     {/* Input Section - 15% Height */}
@@ -228,7 +249,7 @@ export function MessageBox() {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white text-black  h-full ">
+                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white text-black h-full">
                     {userProfiles?.map((item) => (
                         <div key={item.id} className="flex cursor-pointer p-2" onClick={() => openUserChats(item.username, item.id)}>
                             <img src={item.profilePicture} className="size-8 rounded-full" alt="profile" />
@@ -239,5 +260,4 @@ export function MessageBox() {
             )}
         </div>
     );
-    
 }
