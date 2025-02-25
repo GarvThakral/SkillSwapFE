@@ -89,7 +89,7 @@ export function NavBar(){
       </Link>
       {signedIn ? 
         <div className = "flex items-center">
-          <img src = "coin.png" className = "size-8"></img>
+          <img src = "token.svg" className = "size-6 m-1"></img>
           <span className="text-sm pr-2">{userToken}</span>
         </div>:
         null 

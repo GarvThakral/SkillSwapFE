@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../components/buttons";
+import { CreditCardIcon } from "../components/creditCardIcon";
+import { MoneyIcon } from "../components/moneyIcon";
+import { ExchangeIcon } from "../components/exchangeIcon";
 
 export function BuyTokens() {
     const [amount, setAmount] = useState(250);
+    const selectRef = useRef<HTMLSelectElement>(null);
+    const tokenRef = useRef<HTMLInputElement>(null);
     function loadScript(src:any) {
         return new Promise((resolve) => {
             const script = document.createElement("script");
@@ -100,34 +105,61 @@ export function BuyTokens() {
                 className="border p-2 m-2"
             />
             <Button text="Purchase" style="Secondary" onclick={displayRazorpay} /> */}
-            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 bg-gray-100`}>
+            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200`}>
                 <div className = {'col-span-2  flex flex-col items-center bordeer-r-2'}>
-                    <div className = {'flex flex-col items-center justify-around h-[60%] border-b-2 border-gray-400 w-full'}>
+                    <div className = {'flex flex-col items-center justify-evenly h-[60%] border-b-2 border-gray-400 w-full'}>
                         <div className = {'text-2xl font-extrabold '}>
                             Purchase Tokens
                         </div>
                         <div className = {'flex flex-col items-center'}>
-                            <label className = {'text-lg'}>Select a package</label>
-                            <select className = {'bg-transparent border-b-2 text-center outline-none border-gray-400'}>
-                                <option>
+                            <label className = {'text-lg font-semibold p-2'}>Select a package</label>
+                            <select 
+                                className = {'bg-transparent border-b-2 text-center outline-none border-gray-400 '} 
+                                ref = {selectRef} 
+                                onChange={()=>{
+                                    if(selectRef.current.value == ""){
+                                        setAmount((tokenRef.current.value)*5);
+                                    }else if(selectRef.current.value == "Standard"){
+                                        setAmount(1000);
+                                    }else if(selectRef.current.value == "Enthusiast"){
+                                        setAmount(2000);
+                                    }else if(selectRef.current.value == "Learner"){
+                                        setAmount(3000);
+                                    }else if(selectRef.current.value == "The almighty"){
+                                        setAmount(4000);
+                                    }
+                                }}>
+                                <option value = "">
+                                    Select
+                                </option>
+                                <option value = "Standard">
                                     Standard
                                 </option>
-                                <option>
+                                <option value = "Enthusiast">
                                     Enthusiast
                                 </option>
-                                <option>
+                                <option value = "Learner">
                                     Learner
                                 </option>
-                                <option>
+                                <option value = "The almighty">
                                     The almighty
                                 </option>
                             </select>
                         </div>
                         <div className = {'flex flex-col items-center'}>
-                            <label className = {'text-lg'}>
+                            <label className = {'text-lg font-semibold'}>
                                 Add custom tokens
                             </label>
-                            <input type = 'number' className = {'border-b-3 bg-transparent w-20 border-b-2 border-gray-400 text-center outline-none'} defaultValue={amount/5}></input>
+                            <input
+                                ref = {tokenRef}
+                                type = 'number'
+                                className = {'border-b-3 bg-transparent w-20 border-b-2 border-gray-400 text-center outline-none'}
+                                defaultValue={amount/5}
+                                onChange={(e)=>{
+                                    let value = parseInt(e.target.value)
+                                    setAmount(value*5);
+                                    selectRef.current.value = "Standard";
+                                }}></input>
                         </div>
                         <div className = {'flex items-center'}>
                             <img src = "./token.svg" className = {'size-4'} ></img> X 1
@@ -135,8 +167,8 @@ export function BuyTokens() {
                         </div>
                     </div>
                     <div className = {'flex flex-col items-center h-[40%] justify-around'}>
-                        <span className = {'text-2xl'}>₹{amount}</span>
-                        <span className = {'text-lg flex items-center'}><img src = "token.svg" className ={'size-6'}></img>{amount/5}</span>
+                        <span className = {'text-2xl '}>₹{amount}</span>
+                        <span className = {'text-lg flex items-center'}><img src = "token.svg" className ={'size-6'}></img>{amount == 1999 ? 500:amount/5}</span>
                         <Button style = "Primary" text = "Pay Now" onclick={()=>displayRazorpay()}></Button>
                         <div className = "flex flex-col items-center">
                             <h1 className ="text-xs">powered by</h1>
@@ -144,15 +176,18 @@ export function BuyTokens() {
                         </div>
                     </div>
                 </div>
-                <div className = {'col-span-2 bg-white flex flex-col items-center '}>
+                <div className = {'col-span-2 bg-white flex flex-col items-centerx   '}>
                     <div className = {'h-[50%] flex flex-col justify-around items-center border-b-2 w-full'}>
                         <span className ={'text-2xl font-extrabold text-center'}>Most trending</span>
                         <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 1 = ₹4</span>
-                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 500 = ₹2000</span>
-                        <Button style = "Primary" text = "Purchase package"></Button>
+                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 500 = ₹1999</span>
+                        <Button style = "Primary" text = "Purchase package" onclick= {async ()=>{setAmount(1999);}}></Button>
                     </div>
-                    <div className = {'h-60%'}>
-
+                    <div className = {'h-[50%] p-3 flex flex-col items-start justify-center'}>
+                        <span className = {'text-3xl'}></span>
+                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><CreditCardIcon/>Buy Instantly</span>  Securely purchase tokens and add them to your wallet.</span>
+                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><ExchangeIcon/> Trade & Learn</span>  Use tokens to request lessons or trade skills.</span>
+                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><MoneyIcon/> Earn & Redeem</span>  Offer skills, earn tokens, and cash out when eligible.</span>
                     </div>
                 </div>
             </div>

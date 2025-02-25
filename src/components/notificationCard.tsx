@@ -176,11 +176,11 @@ export function NotificationCard(NotificationProps: TeachNotification | TradeNot
                 <div className = {'flex items-center'}>
                     <span className = "pl-1">{NotificationProps.sender?.username} wants to you teach you </span>
                     <span className = {'p-1 text-blue-600'}>{NotificationProps.skill?.title} </span>
-                    <span className = {'flex items-center'}>in exchange for {NotificationProps.recieverToken.toString()} <img src = "coin.png" className = {'size-6 inline'}></img></span>
+                    <span className = {'flex items-center'}>in exchange for {NotificationProps.recieverToken.toString()} <img src = "token.svg" className = {'size-6 inline'}></img></span>
                 </div> :
                  <div>
                     <span className = "pl-1">{NotificationProps.sender?.username} wants to you teach you</span>
-                    <span className = {'p-1 text-blue-600'}>{NotificationProps.senderSkill?.title} For {NotificationProps.senderToken.toString()}<img src = "coin.png" className = {'size-6 inline'}></img><span className = {'text-black'}> in exchange for </span>{NotificationProps.receiverSkill?.title} {NotificationProps.recieverToken}<img src = "coin.png" className = {'size-6 inline'}></img> ( )</span>
+                    <span className = {'p-1 text-blue-600'}>{NotificationProps.senderSkill?.title} For {NotificationProps.senderToken.toString()}<img src = "token.svg" className = {'size-6 inline'}></img><span className = {'text-black'}> in exchange for </span>{NotificationProps.receiverSkill?.title} {NotificationProps.recieverToken}<img src = "coin.png" className = {'size-6 inline'}></img> ( )</span>
                 </div>}
 
             </div>

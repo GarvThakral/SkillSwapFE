@@ -74,7 +74,7 @@ export function JobCard(props:ServiceCard){
         <div className="flex justify-between items-center border-b-2 border-black p-2 h-[25%] relative" onClick = {()=>{if(props.clickFunction){props.clickFunction(props.id)}}}>
             {/* Profile Block */}
             <div className = {'absolute top-6 left-4 text-black flex items-center'}>
-                <img src = "coin.png" className = "size-6"></img>
+                <img src = "token.svg" className = "size-6"></img>
                 {props.tokenPrice?.toString()}
             </div>
             <div className="flex justify-center mx-auto ">
