@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/buttons";
 
 export function BuyTokens() {
-    const [amount, setAmount] = useState("");
-
+    const [amount, setAmount] = useState(250);
     function loadScript(src:any) {
         return new Promise((resolve) => {
             const script = document.createElement("script");
@@ -91,8 +90,8 @@ export function BuyTokens() {
     }
 
     return (
-        <div className="min-h-screen flex justify-center items-center flex-col">
-            <span>How many tokens do you want to buy?</span>
+        <div className="h-screen flex justify-center items-center flex-col">
+            {/* <span>How many tokens do you want to buy?</span>
             <input
                 type="number"
                 value={amount}
@@ -100,7 +99,63 @@ export function BuyTokens() {
                 placeholder="Enter amount"
                 className="border p-2 m-2"
             />
-            <Button text="Purchase" style="Secondary" onclick={displayRazorpay} />
+            <Button text="Purchase" style="Secondary" onclick={displayRazorpay} /> */}
+            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 bg-gray-100`}>
+                <div className = {'col-span-2  flex flex-col items-center bordeer-r-2'}>
+                    <div className = {'flex flex-col items-center justify-around h-[60%] border-b-2 border-gray-400 w-full'}>
+                        <div className = {'text-2xl font-extrabold '}>
+                            Purchase Tokens
+                        </div>
+                        <div className = {'flex flex-col items-center'}>
+                            <label className = {'text-lg'}>Select a package</label>
+                            <select className = {'bg-transparent border-b-2 text-center outline-none border-gray-400'}>
+                                <option>
+                                    Standard
+                                </option>
+                                <option>
+                                    Enthusiast
+                                </option>
+                                <option>
+                                    Learner
+                                </option>
+                                <option>
+                                    The almighty
+                                </option>
+                            </select>
+                        </div>
+                        <div className = {'flex flex-col items-center'}>
+                            <label className = {'text-lg'}>
+                                Add custom tokens
+                            </label>
+                            <input type = 'number' className = {'border-b-3 bg-transparent w-20 border-b-2 border-gray-400 text-center outline-none'} defaultValue={amount/5}></input>
+                        </div>
+                        <div className = {'flex items-center'}>
+                            <img src = "./token.svg" className = {'size-4'} ></img> X 1
+                            <span>= 5 rupees</span>
+                        </div>
+                    </div>
+                    <div className = {'flex flex-col items-center h-[40%] justify-around'}>
+                        <span className = {'text-2xl'}>₹{amount}</span>
+                        <span className = {'text-lg flex items-center'}><img src = "token.svg" className ={'size-6'}></img>{amount/5}</span>
+                        <Button style = "Primary" text = "Pay Now" onclick={()=>displayRazorpay()}></Button>
+                        <div className = "flex flex-col items-center">
+                            <h1 className ="text-xs">powered by</h1>
+                            <img src = "razorpay-icon.svg" className = "size-20 h-10"></img>
+                        </div>
+                    </div>
+                </div>
+                <div className = {'col-span-2 bg-white flex flex-col items-center '}>
+                    <div className = {'h-[50%] flex flex-col justify-around items-center border-b-2 w-full'}>
+                        <span className ={'text-2xl font-extrabold text-center'}>Most trending</span>
+                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 1 = ₹4</span>
+                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 500 = ₹2000</span>
+                        <Button style = "Primary" text = "Purchase package"></Button>
+                    </div>
+                    <div className = {'h-60%'}>
+
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

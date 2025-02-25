@@ -38,7 +38,7 @@ export function Notifications(){
     return(
         <div className = {'flex justify-center p-3 h-screen'}>
             {isLoading ? <Loader/> :null}
-            <div className = {'w-screen'}>
+            <div className = {'w-[60%] min-w-32 min-h-32 border-2  rounded-lg'}>
                 {allNotifications?.map((item)=>{
                     if(item.status == "PENDING"){
                         return <NotificationCard {...item}/>

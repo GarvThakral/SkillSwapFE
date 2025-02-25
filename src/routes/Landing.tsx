@@ -26,7 +26,7 @@ export function Landing(){
                         <span className = {"max-w-52 text-center"}>Connect face-to-face and learn in real-time.</span>
                     </div>
                     <div className = {'min-w-96 min-h-48 border-2 rounded-xl flex flex-col items-center justify-center'}>
-                        <MessageButton onClick={()=>console.log("Hi")} />
+                        <MessageButton onClick={()=>console.log("Hi")} size = {12} />
                         <span className= {'font-bold'}>Messaging</span>
                         <span className = {"max-w-52 text-center"}>Chat, plan, and collaborate seamlessly.</span>
                     </div>
