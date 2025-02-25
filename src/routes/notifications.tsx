@@ -14,7 +14,9 @@ export function Notifications(){
     async function fetchAllRequests(){
         setIsLoading(true);
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/teachRequest` ,
+
+
+        const response = await axios.get(`${API_URL}/teachRequest/get`,
             {
                 headers: {
                     token
@@ -28,17 +30,21 @@ export function Notifications(){
                 }
             }
         )
+
         setAllNotifications([ ...response.data.teachRequests , ...response2.data.tradeRequests ]);
         setIsLoading(false);
+
     }
     useEffect(()=>{
         fetchAllRequests()
     },[]);
+    
 
     return(
-        <div className = {'flex justify-center p-3 h-screen'}>
-            {isLoading ? <Loader/> :null}
-            <div className = {'w-[60%] min-w-32 min-h-32 border-2  rounded-lg'}>
+        <div className = {'flex items-center pt-16 h-screen flex-col'}>
+            {/* {isLoading ? <Loader/> :null} */}
+            <span>Notifications</span>
+            <div className = {'w-[50%] min-w-32 min-h-32 border-2  rounded-lg'}>
                 {allNotifications?.map((item)=>{
                     if(item.status == "PENDING"){
                         return <NotificationCard {...item}/>
