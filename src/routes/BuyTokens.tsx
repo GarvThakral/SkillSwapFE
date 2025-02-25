@@ -105,14 +105,14 @@ export function BuyTokens() {
                 className="border p-2 m-2"
             />
             <Button text="Purchase" style="Secondary" onclick={displayRazorpay} /> */}
-            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200`}>
-                <div className = {'col-span-2  flex flex-col items-center bordeer-r-2'}>
-                    <div className = {'flex flex-col items-center justify-evenly h-[60%] border-b-2 border-gray-400 w-full'}>
+            <div className = {`w-[35%] h-[70%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200 p-2`}>
+                <div className = {'col-span-2  flex flex-col items-center bordeer-r-2 border-2 border-gray-400 border-r-0 rounded-l-xl'}>
+                    <div className = {'flex flex-col items-center justify-center h-[60%] border-b-2 border-gray-400 w-full space-y-9'}>
                         <div className = {'text-2xl font-extrabold '}>
                             Purchase Tokens
                         </div>
-                        <div className = {'flex flex-col items-center'}>
-                            <label className = {'text-lg font-semibold p-2'}>Select a package</label>
+                        <div className = {'flex flex-col items-center '}>
+                            <label className = {'text-lg font-semibold'}>Select a package</label>
                             <select 
                                 className = {'bg-transparent border-b-2 text-center outline-none border-gray-400 '} 
                                 ref = {selectRef} 
@@ -176,7 +176,7 @@ export function BuyTokens() {
                         </div>
                     </div>
                 </div>
-                <div className = {'col-span-2 bg-white flex flex-col items-centerx   '}>
+                <div className = {'col-span-2 bg-white flex flex-col items-center rounded-r-xl'}>
                     <div className = {'h-[50%] flex flex-col justify-around items-center border-b-2 w-full'}>
                         <span className ={'text-2xl font-extrabold text-center'}>Most trending</span>
                         <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 1 = ₹4</span>

@@ -161,7 +161,7 @@ export function MessageBox() {
     }, []);
 
     return (
-        <div className="absolute right-6 bottom-6 w-96 h-[400px] bg-slate-100 drop-shadow-lg z-30 flex flex-col rounded-xl">
+        <div className="absolute right-6 bottom-6 w-96 h-[400px] bg-black text-white drop-shadow-lg z-30 flex flex-col rounded-xl ">
             {isLoading ? <Loader/> : null}
     
             {/* Header Section - 10% Height */}
@@ -196,19 +196,23 @@ export function MessageBox() {
             </div>
     
             {userClicked ? (
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full text-black bg-white">
     
                     {/* Chat Messages Section - 75% Height */}
-                    <div className="h-[75%] flex flex-col overflow-auto">
+                    <div className="h-[75%] flex flex-col overflow-auto bg-white">
                         {messages.map((item, index) => (
                             item.type === "MEETING" ? (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end ml-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12" : "mr-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12"}`}>
+                                <div key={index} className={`max-w-[70%] ${userId === item.senderId 
+                                    ? "self-end bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12" 
+                                    : "self-start bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12"}`}>
                                     <Link to={`/video/join/${item.meetingId}`}>
                                         <span>{item.content}</span>
                                     </Link>
                                 </div>
                             ) : (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end bg-blue-500 text-white px-2 py-1 rounded-lg m-1 mx-2" : "bg-gray-200 px-2 py-1 rounded-lg m-1 mx-2"}`}>
+                                <div key={index} className={`max-w-[70%] ${userId === item.senderId 
+                                    ? "self-end bg-blue-500 text-white px-2 py-1 rounded-lg m-1 mx-2" 
+                                    : "self-start bg-gray-200 px-2 py-1 rounded-lg m-1 mx-2"}`}>
                                     {item.content}
                                 </div>
                             )
@@ -224,7 +228,7 @@ export function MessageBox() {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white h-[80%] rounded-b-xl">
+                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white text-black  h-full ">
                     {userProfiles?.map((item) => (
                         <div key={item.id} className="flex cursor-pointer p-2" onClick={() => openUserChats(item.username, item.id)}>
                             <img src={item.profilePicture} className="size-8 rounded-full" alt="profile" />
