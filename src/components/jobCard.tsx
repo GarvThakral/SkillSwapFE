@@ -3,7 +3,7 @@ import { Button } from "./buttons";
 import { useNavigate } from "react-router-dom";
 import { ServiceCard } from "../routes/utilInterface/ServiceCardInterface";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { receiverId, skillId, teachRequestTokens, tradeRequestRecieverTokens } from "../recoil/atoms";
+import { receiverId, serviceId, skillId, teachRequestTokens, tradeRequestRecieverTokens } from "../recoil/atoms";
 import { TeachIcon } from "./teachIcon";
 import { ExchangeIcon } from "./exchangeIcon";
 import Rating from 'react-rating'
@@ -25,9 +25,11 @@ export function JobCard(props:ServiceCard){
     const setTradeRecieverTokens = useSetRecoilState(tradeRequestRecieverTokens);
     const [ rating , setRating ] = useState(0);
     const token = localStorage.getItem('token');
+    const [ servId , setServId ] = useRecoilState(serviceId);
 
     async function createTeachRequest(){
         setRecId(props.user.id);
+        setServId(props.id);
         const response = await axios.post(`${API_URL}/transaction/pending`,
             {
                 user2Id:recId
@@ -56,6 +58,8 @@ export function JobCard(props:ServiceCard){
     }
     async function createTradeRequest(){
         setRecId(props.user.id);
+        setServId(props.id);
+
         const response = await axios.post(`${API_URL}/transaction/pending`,
             {
                 user2Id:recId

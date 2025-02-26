@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { useEffect, useRef } from "react";
-import { loaderState, receiverId, skillId, teachRequestTokens } from "../recoil/atoms";
-import { useRecoilState } from "recoil";
+import { loaderState, receiverId, skillId, teachRequestTokens ,serviceId } from "../recoil/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -14,6 +14,7 @@ export function TeachService(){
     const [ skillsId  ] = useRecoilState(skillId);
     const [ teachTokenValue  ] = useRecoilState(teachRequestTokens);
     const [ isLoading , setIsLoading ] = useRecoilState(loaderState);
+    const servId = useRecoilValue(serviceId); 
     useEffect(() => {
     }, [teachTokenValue]);
     async function createTeachRequest(){

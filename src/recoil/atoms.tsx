@@ -60,3 +60,8 @@ export const loaderState = atom({
   key : "loaderstate",
   default : false 
 });
+
+export const serviceId = atom({
+  key:"serviceId",
+  default:0
+})
