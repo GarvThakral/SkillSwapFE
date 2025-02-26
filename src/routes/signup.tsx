@@ -31,22 +31,17 @@ export function SignUp() {
         setPasswordError(false);
         setConfirmPasswordError(false);
         setImageError(false);
-    
         if (
             !usernameRef.current?.value ||
             !emailRef.current?.value ||
             !passwordRef.current?.value ||
             !confirmPasswordRef.current?.value ||
-            !bioRef.current?.value ||
-            !availabilityRef.current?.value ||
             !imageRef.current?.files?.length
         ) {
             if (!usernameRef.current?.value) setUsernameError(true);
             if (!emailRef.current?.value) setEmailError(true);
             if (!passwordRef.current?.value) setPasswordError(true);
             if (!confirmPasswordRef.current?.value) setConfirmPasswordError(true);
-            if (!bioRef.current?.value) setConfirmPasswordError(true);
-            if (!availabilityRef.current?.value) setConfirmPasswordError(true);
             if (!imageRef.current?.files?.length) setImageError(true);
             
             setIsLoading(false);
@@ -66,7 +61,7 @@ export function SignUp() {
         form.append("bio", bioRef.current.value);
         form.append("availabilitySchedule", availabilityRef.current.value);
         form.append("profilePicture", imageRef.current.files[0]);
-    
+        console.log("Reaching")
         try {
             await axios.post(`${API_URL}/user/signup`, form, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -75,8 +70,7 @@ export function SignUp() {
         } catch (error: any) {
             console.error("Error:", error.response?.data || error.message);
         }
-    
-        setIsLoading(false);
+        setIsLoading(false)
     }
     
 

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { useEffect, useRef, useState } from "react";
-import { loaderState, receiverId, skillId, tradeRequestRecieverTokens } from "../recoil/atoms";
-import { useRecoilState } from "recoil";
+import { loaderState, receiverId, serviceId, skillId, tradeRequestRecieverTokens } from "../recoil/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { SkillProps } from "./utilInterface/SkillInterface";
 import { SearchIcon } from "../components/searchIcon";
 import Loader from "../components/loader";
@@ -24,6 +24,8 @@ export function TradeService() {
     const [filteredSkills, setFilteredSkills] = useState<SkillProps[]>([]);
     const [searching, setSearching] = useState(false);
     const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
+
+    const servId = useRecoilValue(serviceId); 
 
     useEffect(() => {
         axios.get(`${API_URL}/skill`).then(response => {
@@ -67,6 +69,8 @@ export function TradeService() {
             workingDays: dayRef.current?.value,
             senderToken,
             recieverToken: tradeRecieverTokens,
+            serviceId:servId
+
         }, {
             headers: { token },
         });

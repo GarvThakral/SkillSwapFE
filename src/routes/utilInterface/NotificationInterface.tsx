@@ -27,6 +27,9 @@ export interface TeachNotification{
         title?: string;
         description?: string;
         proficiencyLevel?: string;
+    },
+    serviceRed?:{
+        id?:number
     }
     
 }
@@ -67,5 +70,8 @@ export interface TradeNotification{
         title?:string,
         description?:string,
         proficiencyLevel?:string
+    },
+    serviceRel:{
+        id?:number
     }
 }

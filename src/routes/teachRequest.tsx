@@ -44,7 +44,8 @@ export function TeachService(){
                 description:descRef.current?.value,
                 receiverId:recId,
                 workingDays:dayRef.current?.value,
-                recieverToken:teachTokenValue
+                recieverToken:teachTokenValue,
+                serviceId:servId
             },
             {
                 headers: {
@@ -61,7 +62,6 @@ export function TeachService(){
         <div className = {'min-h-screen w-screen flex justify-center items-center flex-col space-y-4'}>
             {/* Availability (time slots)
              */}
-             {isLoading ? <Loader/>:null}
             <span>When are you available to teach ? </span>
             <input ref = {dayRef} placeholder = {'Add your prefered days'}></input>
             <span>Add a comment</span>

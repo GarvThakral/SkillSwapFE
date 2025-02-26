@@ -64,18 +64,19 @@ export function MessageBox() {
         }
     }
     async function completeTransaction(){
-        await axios.post(`${API_URL}/transaction/complete`,
+        await axios.post(`${API_URL}/transaction/complete`, 
             {
-                id:transactionDetails?.id,
-                senderId:transactionDetails?.senderId,
-                recieverId:transactionDetails?.recieverId,
-                amount:transactionDetails?.recieverAmount
-            },{
-                headers:{
+                id: transactionDetails?.id,
+                senderId: transactionDetails?.senderId,
+                recieverId: transactionDetails?.recieverId,
+                amount: transactionDetails?.recieverAmount
+            }, 
+            {
+                headers: {
                     token
                 }
             }
-        )
+        );
         if(transactionDetails?.type == 'TEACH_REQUEST'){
             await axios.delete(`${API_URL}/teachRequest`,
                 {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { TeachNotification ,TradeNotification } from "../routes/utilInterface/NotificationInterface";
-import { allNotificationsArray } from "../recoil/atoms";
+import { allNotificationsArray, serviceId } from "../recoil/atoms";
 import { useRecoilState } from "recoil";
 import { Button } from "./buttons";
 
@@ -87,7 +87,8 @@ export function NotificationCard(NotificationProps: TeachNotification | TradeNot
                     recieverSkillId:NotificationProps.skillId,                             
                     senderAmount:0,
                     recieverAmount:NotificationProps.recieverToken,
-                    requestId:NotificationProps.id
+                    requestId:NotificationProps.id,
+                    serviceId:NotificationProps.serviceRel.id
                 },
                 {
                     headers:{
