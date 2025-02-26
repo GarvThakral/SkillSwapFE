@@ -13,6 +13,15 @@ export interface ServiceCard{
         availabilitySchedule:string;
         profilePicture:string;
         username:string;
+        receivedRatings?: [
+            {
+                id:number,
+                receiverId:number,
+                raterId:number,
+                rating:number,
+                comment:string
+            }
+        ]
     };
     skill:{
         id:number;

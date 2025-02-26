@@ -6,6 +6,9 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import { receiverId, skillId, teachRequestTokens, tradeRequestRecieverTokens } from "../recoil/atoms";
 import { TeachIcon } from "./teachIcon";
 import { ExchangeIcon } from "./exchangeIcon";
+import Rating from 'react-rating'
+import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -20,7 +23,9 @@ export function JobCard(props:ServiceCard){
     const setSkillId = useSetRecoilState(skillId);
     const setTeachTokenValue = useSetRecoilState(teachRequestTokens);
     const setTradeRecieverTokens = useSetRecoilState(tradeRequestRecieverTokens);
+    const [ rating , setRating ] = useState(0);
     const token = localStorage.getItem('token');
+
     async function createTeachRequest(){
         setRecId(props.user.id);
         const response = await axios.post(`${API_URL}/transaction/pending`,
@@ -69,7 +74,13 @@ export function JobCard(props:ServiceCard){
             navigate('/tradeRequest');
         }
     }
-
+    useEffect(()=>{
+        let total = 0;
+        props.user.receivedRatings.map((item)=>{
+            total += item.rating;
+        })
+        setRating(total);
+    },[])
     return(
     <div className = {`w-80 rounded-xl bg-white h-80 text-black overflow-hidden my-2 mx-2 shadow-lg hover:shadow-2xl duration-200 font-['DM_sans']`} >
         {/* Head Block */}
@@ -77,11 +88,17 @@ export function JobCard(props:ServiceCard){
             {/* Profile Block */}
             <div className="flex justify-center h-fit items-center">
                 <div className = {''}>
-                    <img src={props.user.profilePicture} className="rounded-full w-10 h-10" alt="Profile" />
+                    <img src={props.user.profilePicture} className="rounded-full w-12 h-12 border-4 " alt="Profile" />
                 </div>
                 <div className="ml-2">
                     <p>{props.user.username}</p>
-                    <p>*****</p>
+                    <Rating
+                        initialRating={rating}
+                        emptySymbol={<Star className="w-4 h-4 text-gray-400" />}
+                        fullSymbol={<Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />}
+                        fractions={2}
+                        readonly = {true}
+                    />
                 </div>
             </div>
 
@@ -98,7 +115,7 @@ export function JobCard(props:ServiceCard){
                 <p className = {'font-bold'}>"{props.skill.title}"</p>
                 <p className = {'text-center'}>"{props.skill.description}"</p>
             </div>
-            <div className = {' text-black flex items-center mx-auto'}>
+            <div className = {' text-black flex items-center '}>
                 <img src = "token.svg" className = "size-6 m-1"></img>
                 {props.tokenPrice?.toString()}
             </div>
