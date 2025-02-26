@@ -1,9 +1,8 @@
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { useEffect, useRef } from "react";
-import { loaderState, receiverId, skillId, teachRequestTokens ,serviceId } from "../recoil/atoms";
+import { loaderState, receiverId, skillId, teachRequestTokens ,serviceId, skillName, userName, skillCost, userTokens } from "../recoil/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
-import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,6 +14,9 @@ export function TeachService(){
     const [ teachTokenValue  ] = useRecoilState(teachRequestTokens);
     const [ isLoading , setIsLoading ] = useRecoilState(loaderState);
     const servId = useRecoilValue(serviceId); 
+    const [skillsName] = useRecoilState(skillName);
+    const [usersName] = useRecoilState(userName);
+    const [skillsCost] = useRecoilState(skillCost);
     useEffect(() => {
     }, [teachTokenValue]);
     async function createTeachRequest(){
@@ -59,14 +61,16 @@ export function TeachService(){
         
 
     return(
-        <div className = {'min-h-screen w-screen flex justify-center items-center flex-col space-y-4'}>
-            {/* Availability (time slots)
-             */}
-            <span>When are you available to teach ? </span>
-            <input ref = {dayRef} placeholder = {'Add your prefered days'}></input>
-            <span>Add a comment</span>
-            <input ref = {descRef} placeholder = {'I work on tuesdays but id be avalialble after 9 .... '} className = {'w-96'}></input>
-            <Button text = "Send request" style = "Primary" onclick={createTeachRequest}></Button>
+        <div className = {`h-screen w-screen flex justify-center items-center flex-col space-y-4 font-['DM_sans']`}>
+            <div className="shadow-2xl p-6 w-[40%] h-[60%] flex flex-col justify-between items-center space-y-3 ">
+                
+                <span className = {'flex flex-wrap text-3xl font-bold items-center'}>Teaching &nbsp;<span className = {'font-extrabold'}>{usersName} </span>&nbsp;<span className = {'text-blue-600'}>{skillsName}</span>&nbsp; in exchange for &nbsp;<img src = "token.svg" className = {'size-6'}></img><span className = {'font-light'}>{skillsCost}</span></span>
+                <span className = {'font-semibold text-xl'}>When are you available to teach ? </span>
+                <input className = {'outline-none border-b-2 '} ref = {dayRef} placeholder = {'Add your prefered days'}></input>
+                <span className = {'font-semibold text-xl'}>Add a comment</span>
+                <input className = {'outline-none border-b-2 w-96'} ref = {descRef} placeholder = {'I work on tuesdays but id be avalialble after 9 .... '} ></input>
+                <Button text = "Send request" style = "Primary" onclick={createTeachRequest}></Button>
+            </div>
         </div>
     );  
 }

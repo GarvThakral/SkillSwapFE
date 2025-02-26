@@ -65,3 +65,16 @@ export const serviceId = atom({
   key:"serviceId",
   default:0
 })
+
+export const skillName = atom({
+  key:"skillName",
+  default:""
+})
+export const userName = atom({
+  key:"userName",
+  default:""
+})
+export const skillCost = atom({
+  key:"skillCost",
+  default:0
+})

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Button } from "../components/buttons";
 import { useEffect, useRef, useState } from "react";
-import { loaderState, receiverId, serviceId, skillId, tradeRequestRecieverTokens } from "../recoil/atoms";
+import { loaderState, receiverId, serviceId, skillId, skillName, tradeRequestRecieverTokens, userName } from "../recoil/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { SkillProps } from "./utilInterface/SkillInterface";
 import { SearchIcon } from "../components/searchIcon";
@@ -24,6 +24,9 @@ export function TradeService() {
     const [filteredSkills, setFilteredSkills] = useState<SkillProps[]>([]);
     const [searching, setSearching] = useState(false);
     const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
+
+    const [skillsName] = useRecoilState(skillName);
+    const [usersName] = useRecoilState(userName);
 
     const servId = useRecoilValue(serviceId); 
 
@@ -79,44 +82,46 @@ export function TradeService() {
     }
 
     return (
-        <div className="min-h-screen w-screen flex flex-col items-center space-y-4">
+        <div className="h-screen w-screen flex flex-col items-center justify-center space-y-4">
             {isLoading ? null:null}
-            <span>What skill would you like to offer?</span>
-            <div className="h-18 w-64 flex items-center p-2 rounded-2xl bg-blue-400 bg-opacity-20 space-x-3">
-                <SearchIcon />
-                <input
-                    type="search"
-                    ref={inputRef}
-                    placeholder="Search for any skill..."
-                    className="outline-none bg-transparent placeholder-slate-950"
-                    onChange={searchSkills}
-                    onFocus={() => setSearching(true)}
-                />
-            </div>
-            {searching && (
-                <div className="overflow-y-auto h-28 border-2 w-64 p-3">
-                    {filteredSkills.map((item) => (
-                        <div key={item.id} onClick={() => {
-                            inputRef.current!.value = item.title;
-                            setSearching(false);
-                            setSenderSkillId(item.id);
-                        }}>
-                            {item.title}
-                        </div>
-                    ))}
+            <div className="shadow-2xl p-6 w-[40%] min-h-[70%] flex flex-col justify-between items-center space-y-5 "> 
+                {inputRef.current?.value == 0 ? null:<span className = {'flex flex-wrap text-3xl font-bold items-center'}>Trading &nbsp;<span className = {'font-extrabold'}>{usersName} </span>&nbsp;<span className = {'text-blue-600'}>{skillsName}</span>&nbsp; in exchange for &nbsp;</span>}
+                <span className = {'font-semibold text-xl'}>What skill would you like to offer?</span>
+                <div className=" flex items-center p-2 border-b-2 bg-opacity-20 space-x-3">
+                    <SearchIcon />
+                    <input
+                        type="search"
+                        ref={inputRef}
+                        placeholder="Search for any skill..."
+                        className="outline-none bg-transparent placeholder-slate-950"
+                        onChange={searchSkills}
+                        onFocus={() => setSearching(true)}
+                    />
                 </div>
-            )}
-            <span className="text-2xl">How much do you wanna charge?</span>
-            <input type="number" defaultValue={50} className="p-2 border-2 w-20" ref={priceRef} />
-
-            <span>When are you available to trade?</span>
-            <input ref={dayRef} placeholder="Add your preferred days" />
-
-            <span>Add a comment</span>
-            <input ref={descRef} placeholder="I work on Tuesdays but I'm available after 9..." className="w-96" />
-
-            <Button text="Send request" style="Primary" onclick={createTradeRequest} />
+                {searching && (
+                    <div className="overflow-y-auto h-28 border-2 w-64 p-3">
+                        {filteredSkills.map((item) => (
+                            <div key={item.id} onClick={() => {
+                                inputRef.current!.value = item.title;
+                                setSearching(false);
+                                setSenderSkillId(item.id);
+                            }}>
+                                {item.title}
+                            </div>
+                        ))}
+                    </div>
+                )}
+                <span className="font-semibold text-xl">How much do you wanna charge?</span>
+                <input type="number" defaultValue={50} className="p-2 border-b-2 w-20 text-center" ref={priceRef} />
+                <span className = {'font-semibold text-xl'}>When are you available to teach ? </span>
+                <input className = {'outline-none border-b-2 '} ref = {dayRef} placeholder = {'Add your prefered days'}></input>
+                <span className = {'font-semibold text-xl'}>Add a comment</span>
+                <input className = {'outline-none border-b-2 w-96'} ref = {descRef} placeholder = {'I work on tuesdays but id be avalialble after 9 .... '} ></input>
+                {}
+                <Button text="Send request" style="Primary" onclick={createTradeRequest} />
+            </div>
         </div>
+        
     );
 }
     

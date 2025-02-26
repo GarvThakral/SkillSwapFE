@@ -2,8 +2,8 @@ import axios from "axios";
 import { Button } from "./buttons";
 import { useNavigate } from "react-router-dom";
 import { ServiceCard } from "../routes/utilInterface/ServiceCardInterface";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { receiverId, serviceId, skillId, teachRequestTokens, tradeRequestRecieverTokens } from "../recoil/atoms";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { receiverId, serviceId, skillCost, skillId, skillName, teachRequestTokens, tradeRequestRecieverTokens, userName } from "../recoil/atoms";
 import { TeachIcon } from "./teachIcon";
 import { ExchangeIcon } from "./exchangeIcon";
 import Rating from 'react-rating'
@@ -27,7 +27,14 @@ export function JobCard(props:ServiceCard){
     const token = localStorage.getItem('token');
     const [ servId , setServId ] = useRecoilState(serviceId);
 
+    const [, setSkillName] = useRecoilState(skillName);
+    const [, setUserName] = useRecoilState(userName);
+    const [, setSkillCost] = useRecoilState(skillCost);
+
     async function createTeachRequest(){
+        setSkillName(props.skill.title)
+        setUserName(props.user.username)
+        setSkillCost(props.tokenPrice)
         setRecId(props.user.id);
         setServId(props.id);
         const response = await axios.post(`${API_URL}/transaction/pending`,
