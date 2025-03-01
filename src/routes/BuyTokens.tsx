@@ -105,14 +105,14 @@ export function BuyTokens() {
                 className="border p-2 m-2"
             />
             <Button text="Purchase" style="Secondary" onclick={displayRazorpay} /> */}
-            <div className = {`w-[45%] h-[80%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200 p-2`}>
-                <div className = {'col-span-2  flex flex-col items-center bordeer-r-2 border-2 border-gray-400 border-r-0 rounded-l-xl'}>
+            <div className = {`w-[65%] min-h-[80%] grid grid-cols-4 rounded-lg font-['DM_sans'] border-2 drop-shadow-lg bg-gray-200 p-2`}>
+                <div className = {'col-span-2  flex flex-col items-center p-4 border-gray-400 border-r-0 rounded-l-xl'}>
                     <div className = {'flex flex-col items-center justify-center h-[60%] border-b-2 border-gray-400 w-full space-y-9'}>
-                        <div className = {'text-2xl font-extrabold '}>
+                        <div className = {'lg:text-2xl text-xl font-extrabold '}>
                             Purchase Tokens
                         </div>
                         <div className = {'flex flex-col items-center '}>
-                            <label className = {'text-lg font-semibold'}>Select a package</label>
+                            <label className = {'lg:text-lg text-sm font-semibold'}>Select a package</label>
                             <select 
                                 className = {'bg-transparent border-b-2 text-center outline-none border-gray-400 '} 
                                 ref = {selectRef} 
@@ -147,7 +147,7 @@ export function BuyTokens() {
                             </select>
                         </div>
                         <div className = {'flex flex-col items-center'}>
-                            <label className = {'text-lg font-semibold'}>
+                            <label className = {'lg:text-lg text-sm font-semibold'}>
                                 Add custom tokens
                             </label>
                             <input
@@ -167,8 +167,8 @@ export function BuyTokens() {
                         </div>
                     </div>
                     <div className = {'flex flex-col items-center h-[40%] justify-around'}>
-                        <span className = {'text-2xl '}>₹{amount}</span>
-                        <span className = {'text-lg flex items-center'}><img src = "token.svg" className ={'size-6'}></img>{amount == 1999 ? 500:amount/5}</span>
+                        <span className = {'lg:text-2xl text-lg '}>₹{amount}</span>
+                        <span className = {'lg:text-lg text-sm flex items-center'}><img src = "token.svg" className ={'size-6'}></img>{amount == 1999 ? 500:amount/5}</span>
                         <Button style = "Primary" text = "Pay Now" onclick={()=>displayRazorpay()}></Button>
                         <div className = "flex flex-col items-center">
                             <h1 className ="text-xs">powered by</h1>
@@ -176,18 +176,17 @@ export function BuyTokens() {
                         </div>
                     </div>
                 </div>
-                <div className = {'col-span-2 bg-white flex flex-col items-center rounded-r-xl'}>
-                    <div className = {'h-[50%] flex flex-col justify-around items-center border-b-2 w-full'}>
-                        <span className ={'text-2xl font-extrabold text-center'}>Most trending</span>
-                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 1 = ₹4</span>
-                        <span className = {'flex items-center'}><img src = "token.svg" className = {'size-4'}></img> X 500 = ₹1999</span>
+                <div className = {'col-span-2 bg-white flex flex-col items-center rounded-r-xl p-4'}>
+                    <div className = {'h-[45%] flex flex-col justify-center items-center border-b-2 w-full space-y-4'}>
+                        <span className ={'lg:text-2xl text-lg font-extrabold text-center'}>Most trending</span>
+                        <span className = {'flex items-center lg:text-xl text-sm'}><img src = "token.svg" className = {'lg:size-4 size-3'}></img> X 1 = ₹4</span>
+                        <span className = {'flex items-center lg:text-xl text-sm'}><img src = "token.svg" className = {'lg:size-4 size-3'}></img> X 500 = ₹1999</span>
                         <Button style = "Primary" text = "Purchase package" onclick= {async ()=>{setAmount(1999);}}></Button>
                     </div>
-                    <div className = {'h-[50%] p-3 flex flex-col items-start justify-center space-y-5'}>
-                        <span className = {'text-3xl'}></span>
-                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><CreditCardIcon/>Buy Instantly</span>  Securely purchase tokens and add them to your wallet.</span>
-                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><ExchangeIcon/> Trade & Learn</span>  Use tokens to request lessons or trade skills.</span>
-                        <span className = {'text-sm'}><span className ={'text-lg font-bold flex items-center'}><MoneyIcon/> Earn & Redeem</span>  Offer skills, earn tokens, and cash out when eligible.</span>
+                    <div className = {'h-[55%] p-4 flex flex-col items-start justify-center lg:space-y-5 space-y-0 '}>
+                        <span className = {'lg:text-sm text-xs'}><span className ={'lg:text-lg text-sm font-bold flex items-center'}><CreditCardIcon/>Buy Instantly</span>  Securely purchase tokens and add them to your wallet.</span>
+                        <span className = {'lg:text-sm text-xs'}><span className ={'lg:text-lg text-sm font-bold flex items-center'}><ExchangeIcon/> Trade & Learn</span>  Use tokens to request lessons or trade skills.</span>
+                        <span className = {'lg:text-sm text-xs'}><span className ={'lg:text-lg text-sm font-bold flex items-center'}><MoneyIcon/> Earn & Redeem</span>  Offer skills, earn tokens, and cash out when eligible.</span>
                     </div>
                 </div>
             </div>
