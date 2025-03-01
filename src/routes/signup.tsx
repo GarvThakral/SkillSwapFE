@@ -77,44 +77,41 @@ export function SignUp() {
     return (
         <div className="h-screen overflow-hidden flex items-center justify-center">
             {isLoading ? <Loader/>:null}
-            <div className="min-w-[400px] max-w-[800px] w-[80%] h-[500px] shadow-2xl flex flex-col items-center justify-around p-3">
-                <span className="text-3xl p-2 px-3 border-b-2">Sign up</span>
-                <div className = {'flex w-[80%]'}>
+            <div className="w-[50%] h-[500px] shadow-2xl flex ">
+                <div className = {'flex flex-col p-4'}>
+                    <span className="text-3xl p-2 px-3 border-b-2">Sign up</span>
 
-                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
-                        <input ref={usernameRef} className="outline-none border-b w-[80%]" placeholder="Username" />
-                        {usernameError && <span className="text-red-500 w-[80%]">Username is required.</span>}
+                    <input ref={usernameRef} className="outline-none border-b w-[80%]" placeholder="Username" />
+                    {usernameError && <span className="text-red-500 w-[80%]">Username is required.</span>}
 
-                        <input ref={emailRef} className="outline-none border-b w-[80%]" placeholder="Email" />
-                        {emailError && <span className="text-red-500 w-[80%]">Email is required.</span>}
+                    <input ref={emailRef} className="outline-none border-b w-[80%]" placeholder="Email" />
+                    {emailError && <span className="text-red-500 w-[80%]">Email is required.</span>}
 
-                        <input ref={passwordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Password" />
-                        {passwordError && <span className="text-red-500 w-[80%]">Password is required.</span>}
+                    <input ref={passwordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Password" />
+                    {passwordError && <span className="text-red-500 w-[80%]">Password is required.</span>}
 
 
-                    </div>
-                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
-                        <input ref={availabilityRef} className="outline-none border-b w-[80%]" placeholder="Availability (e.g., Mon-Friday)" />
-                        <input ref={bioRef} className="outline-none border-b w-[80%]" placeholder="Bio" />
-                        <input ref={confirmPasswordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Confirm Password" />
-                        {confirmPasswordError && <span className="text-red-500 w-[80%]">Passwords do not match.</span>}
-                    </div>
-                </div>
+                    <input ref={availabilityRef} className="outline-none border-b w-[80%]" placeholder="Availability (e.g., Mon-Friday)" />
+                    <input ref={bioRef} className="outline-none border-b w-[80%]" placeholder="Bio" />
+                    <input ref={confirmPasswordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Confirm Password" />
+                    {confirmPasswordError && <span className="text-red-500 w-[80%]">Passwords do not match.</span>}
 
-                <div className = {'flex flex-col'}>
                     <label htmlFor="pfp" className="border-2 p-2 rounded-lg text-black cursor-pointer">Upload Profile Picture</label>
                     <input ref={imageRef} type="file" id="pfp" className="hidden" />
                     {imageError && <span className="text-red-500">Please upload a profile picture.</span>}
+
+                    <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-[40%]" onClick={()=>loginUser()}>
+                        Sign Up
+                    </button>
+
+                    <div className="h-fit py-3 w-[80%] flex justify-around">
+                        <span className="border-2 py-2 px-4 rounded-lg">Google</span>
+                        <span className="border-2 py-2 px-4 rounded-lg">Linkedin</span>
+                        <span className="border-2 py-2 px-4 rounded-lg">SSO</span>
+                    </div>
                 </div>
-
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-[40%]" onClick={()=>loginUser()}>
-                    Sign Up
-                </button>
-
-                <div className="h-fit py-3 w-[80%] flex justify-around">
-                    <span className="border-2 py-2 px-4 rounded-lg">Google</span>
-                    <span className="border-2 py-2 px-4 rounded-lg">Linkedin</span>
-                    <span className="border-2 py-2 px-4 rounded-lg">SSO</span>
+                <div className = {''}>
+                    <span>Sign in instead ?</span>
                 </div>
                 <Link to = "/signin"><span className="text-md text-blue-600 text-md cursor-pointer">Sign in instead ?</span></Link>
 
