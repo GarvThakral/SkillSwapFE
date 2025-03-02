@@ -19,7 +19,7 @@ export function BuyTokens() {
     }
 
     async function displayRazorpay() {
-        if (!amount || parseInt(amount) <= 0) {
+        if (!amount || amount <= 0) {
             alert("Please enter a valid amount");
             return;
         }
@@ -117,16 +117,18 @@ export function BuyTokens() {
                                 className = {'bg-transparent border-b-2 text-center outline-none border-gray-400 '} 
                                 ref = {selectRef} 
                                 onChange={()=>{
-                                    if(selectRef.current.value == ""){
-                                        setAmount((tokenRef.current.value)*5);
-                                    }else if(selectRef.current.value == "Standard"){
-                                        setAmount(1000);
-                                    }else if(selectRef.current.value == "Enthusiast"){
-                                        setAmount(2000);
-                                    }else if(selectRef.current.value == "Learner"){
-                                        setAmount(3000);
-                                    }else if(selectRef.current.value == "The almighty"){
-                                        setAmount(4000);
+                                    if(selectRef.current && tokenRef.current){
+                                        if(selectRef.current.value == ""){
+                                            setAmount(Number(tokenRef.current.value)*5);
+                                        }else if(selectRef.current.value == "Standard"){
+                                            setAmount(1000);
+                                        }else if(selectRef.current.value == "Enthusiast"){
+                                            setAmount(2000);
+                                        }else if(selectRef.current.value == "Learner"){
+                                            setAmount(3000);
+                                        }else if(selectRef.current.value == "The almighty"){
+                                            setAmount(4000);
+                                        }
                                     }
                                 }}>
                                 <option value = "">
@@ -158,7 +160,10 @@ export function BuyTokens() {
                                 onChange={(e)=>{
                                     let value = parseInt(e.target.value)
                                     setAmount(value*5);
-                                    selectRef.current.value = "Standard";
+                                    if (selectRef.current) {
+                                        selectRef.current.value = "Standard";
+                                    }
+                                    
                                 }}></input>
                         </div>
                         <div className = {'flex items-center'}>

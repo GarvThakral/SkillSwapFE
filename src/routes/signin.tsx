@@ -8,6 +8,15 @@ import { Loader2, Github, Mail } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+interface ButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "default" | "outline";
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+}
+
 // Custom Button Component
 const Button = ({ 
   children, 
@@ -16,7 +25,7 @@ const Button = ({
   onClick, 
   disabled = false,
   type = "button"
-}) => {
+}: ButtonProps) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
   const variantStyles = {
     default: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500",
@@ -35,27 +44,24 @@ const Button = ({
   );
 };
 
-// Custom Input Component
-const Input = ({ 
-  id, 
-  type = "text", 
-  className = "", 
-  placeholder, 
-  ref
-}) => {
-  return (
-    <input
-      id={id}
-      type={type}
-      ref={ref}
-      placeholder={placeholder}
-      className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
-    />
-  );
-};
+interface InputProps {
+  id: string;
+  type?: string;
+  className?: string;
+  placeholder?: string;
+  ref?: React.RefObject<HTMLInputElement>;
+}
+
+
+
+interface LabelProps {
+  htmlFor: string;
+  children: React.ReactNode;
+  className?: string;
+}
 
 // Custom Label Component
-const Label = ({ htmlFor, children, className = "" }) => {
+const Label = ({ htmlFor, children, className = "" }: LabelProps) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -72,12 +78,12 @@ const Separator = () => {
 };
 
 export function SignIn() {
-    const [usernameError, setUsernameError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [userExistsError, setUserExistsError] = useState(false);
+    const [usernameError, setUsernameError] = useState<boolean>(false);
+    const [passwordError, setPasswordError] = useState<boolean>(false);
+    const [userExistsError, setUserExistsError] = useState<boolean>(false);
     
-    const usernameRef = useRef(null);
-    const passwordRef = useRef(null);
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
     const [isLoading, setIsLoading] = useRecoilState(loaderState);
     const navigate = useNavigate();
 
