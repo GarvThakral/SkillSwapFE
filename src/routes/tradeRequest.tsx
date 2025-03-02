@@ -5,7 +5,6 @@ import { loaderState, receiverId, serviceId, skillId, skillName, tradeRequestRec
 import { useRecoilState, useRecoilValue } from "recoil";
 import { SkillProps } from "./utilInterface/SkillInterface";
 import { SearchIcon } from "../components/searchIcon";
-import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -85,7 +84,7 @@ export function TradeService() {
         <div className="h-screen w-screen flex flex-col items-center justify-center space-y-4">
             {isLoading ? null:null}
             <div className="shadow-2xl p-6 w-[40%] min-h-[70%] flex flex-col justify-between items-center space-y-5 "> 
-                {inputRef.current?.value == 0 ? null:<span className = {'flex flex-wrap text-3xl font-bold items-center'}>Trading &nbsp;<span className = {'font-extrabold'}>{usersName} </span>&nbsp;<span className = {'text-blue-600'}>{skillsName}</span>&nbsp; in exchange for &nbsp;</span>}
+                {parseInt(inputRef.current?.value ?? "0") == 0 ? null:<span className = {'flex flex-wrap text-3xl font-bold items-center'}>Trading &nbsp;<span className = {'font-extrabold'}>{usersName} </span>&nbsp;<span className = {'text-blue-600'}>{skillsName}</span>&nbsp; in exchange for &nbsp;</span>}
                 <span className = {'font-semibold text-xl'}>What skill would you like to offer?</span>
                 <div className=" flex items-center p-2 border-b-2 bg-opacity-20 space-x-3">
                     <SearchIcon />

@@ -7,6 +7,17 @@ import { motion } from "framer-motion";
 import { Loader2, Upload, Github, Mail } from "lucide-react";
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Define prop types
+interface ButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "default" | "outline";
+  onClick?: () => void;
+  disabled?: boolean;
+  type?: "button" | "submit" | "reset";
+  style?: string;
+}
+
 // Custom Button Component
 const Button = ({ 
   children, 
@@ -14,18 +25,21 @@ const Button = ({
   variant = "default", 
   onClick, 
   disabled = false,
-  type = "button"
-}) => {
+  type = "button",
+  style 
+}: ButtonProps) => {
   const baseStyles = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
   const variantStyles = {
-    default: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500",
+    default: "bg-black text-white hover:bg-gray-800 focus:ring-gray-500",
     outline: "border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 focus:ring-gray-500"
   };
+  
+  const secondaryStyle = style === "Secondary" ? "bg-gray-100 text-gray-700 hover:bg-gray-200" : "";
   
   return (
     <button
       type={type}
-      className={`${baseStyles} ${variantStyles[variant]} ${className} px-4 py-2`}
+      className={`${baseStyles} ${variantStyles[variant]} ${secondaryStyle} ${className} px-4 py-2`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -34,31 +48,47 @@ const Button = ({
   );
 };
 
+// Define Input props interface
+interface InputProps {
+  id: string;
+  type?: string;
+  className?: string;
+  placeholder?: string;
+  ref?: React.RefObject<HTMLInputElement>;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  accept?: string;
+}
+
 // Custom Input Component
 const Input = ({ 
   id, 
   type = "text", 
   className = "", 
   placeholder, 
-  ref,
   onChange,
   accept
-}) => {
+}: InputProps) => {
   return (
     <input
       id={id}
       type={type}
-      ref={ref}
       placeholder={placeholder}
       accept={accept}
       onChange={onChange}
-      className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${className}`}
+      className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 ${className}`}
     />
   );
 };
 
+// Define Label props interface
+interface LabelProps {
+  htmlFor: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
 // Custom Label Component
-const Label = ({ htmlFor, children, className = "" }) => {
+const Label = ({ htmlFor, children, className = "" }: LabelProps) => {
   return (
     <label
       htmlFor={htmlFor}
@@ -81,25 +111,25 @@ export function SignUp() {
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [imageError, setImageError] = useState(false);
 
-    const usernameRef = useRef(null);
-    const emailRef = useRef(null);
-    const passwordRef = useRef(null);
-    const confirmPasswordRef = useRef(null);
-    const imageRef = useRef(null);
-    const availabilityRef = useRef(null);
-    const bioRef = useRef(null);
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const confirmPasswordRef = useRef<HTMLInputElement>(null);
+    const imageRef = useRef<HTMLInputElement>(null);
+    const availabilityRef = useRef<HTMLInputElement>(null);
+    const bioRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useRecoilState(loaderState);
 
-    const [previewImage, setPreviewImage] = useState(null);
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
     
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
           setImageError(false);
           const reader = new FileReader();
           reader.onloadend = () => {
-            setPreviewImage(reader.result);
+            setPreviewImage(reader.result as string);
           };
           reader.readAsDataURL(file);
         }
@@ -146,7 +176,9 @@ export function SignUp() {
         form.append("password", passwordRef.current.value);
         form.append("bio", bioRef.current.value);
         form.append("availabilitySchedule", availabilityRef.current.value);
-        form.append("profilePicture", imageRef.current.files[0]);
+        if (imageRef.current.files?.[0]) {
+            form.append("profilePicture", imageRef.current.files[0]);
+        }
     
         try {
             await axios.post(`${API_URL}/user/signup`, form, {
@@ -154,14 +186,14 @@ export function SignUp() {
             });
             navigate('/skills');
         } catch (error) {
-            console.error("Error:", error.response?.data || error.message);
+            console.error("Error:", error);
         }
     
         setIsLoading(false);
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-indigo-100 p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -183,9 +215,14 @@ export function SignUp() {
                                         <Label htmlFor="username">Username</Label>
                                         <Input
                                             id="username"
-                                            ref={usernameRef}
                                             placeholder="johndoe"
                                             className={usernameError ? "border-red-500" : ""}
+                                        />
+                                        <input
+                                            type="text"
+                                            id="username-hidden"
+                                            ref={usernameRef}
+                                            className="hidden"
                                         />
                                         {usernameError && <p className="text-sm text-red-500">Username is required</p>}
                                     </div>
@@ -195,9 +232,14 @@ export function SignUp() {
                                         <Input
                                             id="email"
                                             type="email"
-                                            ref={emailRef}
                                             placeholder="john@example.com"
                                             className={emailError ? "border-red-500" : ""}
+                                        />
+                                        <input
+                                            type="email"
+                                            id="email-hidden"
+                                            ref={emailRef}
+                                            className="hidden"
                                         />
                                         {emailError && <p className="text-sm text-red-500">Email is required</p>}
                                     </div>
@@ -207,8 +249,13 @@ export function SignUp() {
                                         <Input
                                             id="password"
                                             type="password"
-                                            ref={passwordRef}
                                             className={passwordError ? "border-red-500" : ""}
+                                        />
+                                        <input
+                                            type="password"
+                                            id="password-hidden"
+                                            ref={passwordRef}
+                                            className="hidden"
                                         />
                                         {passwordError && <p className="text-sm text-red-500">Password is required</p>}
                                     </div>
@@ -217,12 +264,24 @@ export function SignUp() {
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="availability">Availability</Label>
-                                        <Input id="availability" ref={availabilityRef} placeholder="Mon-Friday" />
+                                        <Input id="availability" placeholder="Mon-Friday" />
+                                        <input
+                                            type="text"
+                                            id="availability-hidden"
+                                            ref={availabilityRef}
+                                            className="hidden"
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="bio">Bio</Label>
-                                        <Input id="bio" ref={bioRef} placeholder="Tell us about yourself" />
+                                        <Input id="bio" placeholder="Tell us about yourself" />
+                                        <input
+                                            type="text"
+                                            id="bio-hidden"
+                                            ref={bioRef}
+                                            className="hidden"
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
@@ -230,8 +289,13 @@ export function SignUp() {
                                         <Input
                                             id="confirmPassword"
                                             type="password"
-                                            ref={confirmPasswordRef}
                                             className={confirmPasswordError ? "border-red-500" : ""}
+                                        />
+                                        <input
+                                            type="password"
+                                            id="confirmPassword-hidden"
+                                            ref={confirmPasswordRef}
+                                            className="hidden"
                                         />
                                         {confirmPasswordError && <p className="text-sm text-red-500">Passwords do not match</p>}
                                     </div>
@@ -240,7 +304,7 @@ export function SignUp() {
 
                             <div className="space-y-4">
                                 <div className="flex flex-col items-center gap-4">
-                                    <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-indigo-100">
+                                    <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100">
                                         {previewImage ? (
                                             <img
                                                 src={previewImage || "/placeholder.svg"}
@@ -256,7 +320,7 @@ export function SignUp() {
                                     <div className="space-y-2 text-center">
                                         <Label
                                             htmlFor="pfp"
-                                            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50 bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 h-9 px-4 py-2 cursor-pointer"
+                                            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-500 disabled:pointer-events-none disabled:opacity-50 bg-gray-100 text-gray-700 shadow-sm hover:bg-gray-200 h-9 px-4 py-2 cursor-pointer"
                                         >
                                             Upload Profile Picture
                                         </Label>
@@ -306,7 +370,7 @@ export function SignUp() {
 
                                 <p className="text-center text-sm text-gray-500">
                                     Already have an account?{" "}
-                                    <Link to="/signin" className="text-indigo-600 underline-offset-4 hover:underline">
+                                    <Link to="/signin" className="text-black underline-offset-4 hover:underline">
                                         Sign in
                                     </Link>
                                 </p>
@@ -315,9 +379,9 @@ export function SignUp() {
                     </div>
 
                     {/* Right Side - Image/Illustration */}
-                    <div className="hidden md:block flex-1 bg-gradient-to-br from-indigo-100 via-indigo-50 to-white p-8">
+                    <div className="hidden md:block flex-1 bg-gradient-to-br from-gray-100 via-gray-50 to-white p-8">
                         <div className="relative h-full w-full">
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-200 via-indigo-100 to-white rounded-2xl">
+                            <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-white rounded-2xl">
                                 <div className="p-8 h-full flex flex-col justify-center">
                                     <h2 className="text-2xl font-bold mb-4">Join SkillSwap Today</h2>
                                     <p className="text-gray-600">

@@ -4,13 +4,12 @@ import { useEffect } from "react";
 import { NotificationCard } from "../components/notificationCard";
 import { useRecoilState } from "recoil";
 import { allNotificationsArray, loaderState } from "../recoil/atoms";
-import Loader from "../components/loader";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function Notifications(){
 
     const [ allNotifications , setAllNotifications ] = useRecoilState<(TeachNotification | TradeNotification)[]>(allNotificationsArray);
-    const [ isLoading , setIsLoading ] = useRecoilState(loaderState);
+    const [ , setIsLoading ] = useRecoilState(loaderState);
     async function fetchAllRequests(){
         setIsLoading(true);
         const token = localStorage.getItem('token');
