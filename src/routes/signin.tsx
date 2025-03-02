@@ -44,16 +44,6 @@ const Button = ({
   );
 };
 
-interface InputProps {
-  id: string;
-  type?: string;
-  className?: string;
-  placeholder?: string;
-  ref?: React.RefObject<HTMLInputElement>;
-}
-
-
-
 interface LabelProps {
   htmlFor: string;
   children: React.ReactNode;

@@ -16,18 +16,6 @@ export function NavBar(){
   const  setMessageButtonOn  = useSetRecoilState(messageButtonState);
   const [ userToken , setUserTokens ] = useRecoilState(userTokens);
   const setSideBarOpen  = useSetRecoilState(sideBarState);
-  // async function searchSkills(searchParam:string){
-  //   if(searchParam.length === 0){
-  //     setResponse(originalResponse);
-  //     return
-  //   }
-  //   const filteredResponse = originalResponse?.filter((item) =>
-  //     item.skill.title.toLowerCase().includes(searchParam.toLowerCase())
-  //   );
-  
-  //   setResponse(filteredResponse ?? null);
-
-  // }
   async function fetchUserToken(){
     const userId = parseInt(localStorage.getItem("userId") ?? '0');
     const response = await axios.post(`${API_URL}/user/tokens`,{
@@ -55,7 +43,7 @@ export function NavBar(){
 
   return(
   <div className = {'h-16 flex items-center justify-between text-black px-12 overflow-hidden border-b font-medium'}>
-    <img src = "S.png" className = "size-14"></img>
+    <img src = "S-removebg-preview.png" alt = {"SKILLTRADE"} className = "size-20"></img>
     <div className = {`items-center text-xs lg:text-lg  hidden md:flex lg:space-x-12 space-x-6 font-['DM_sans'] `}>
       {location.pathname !== '/skills' ? 
         <Link to = "/skills">

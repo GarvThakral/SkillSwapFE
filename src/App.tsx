@@ -19,6 +19,7 @@ import { useRecoilValue } from 'recoil';
 import { BuyTokens } from './routes/BuyTokens';
 import { SideBar } from './components/sideBar';
 import { Landing } from './routes/Landing';
+import AboutPage from './routes/AboutUs';
 
 function App() {
   console.log("Wassup")
@@ -43,6 +44,7 @@ function App() {
             <Route path="/video/join/:id" element={<JoinMeeting />} />
             <Route path="/purchase" element={<BuyTokens />} />
             <Route path="/" element={<Landing />} />
+            <Route path="/aboutpage" element={<AboutPage />} />
           </Routes>
         </BrowserRouter>
       </div>
