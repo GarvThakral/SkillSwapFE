@@ -70,7 +70,7 @@ export function SignIn(){
                 <div className = {'flex flex-col w-[80%]'}>
                     <input ref = {passwordRef} className = "outline-none border-b w-[80%]" placeholder="Password"></input>
                     {passwordError ?
-                    <span className = "text-red-500 w-[80%]">Please enter your password</span>
+                    <span className = "text-red-500 w-[80%]">Please enter your passworda</span>
                     :null}
                 </div>
                     {userExistsError ?
