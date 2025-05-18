@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { Button } from "../components/buttons";
+import { Button } from "../components/Button";
 import { ServiceCard } from "./utilInterface/ServiceCardInterface";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";

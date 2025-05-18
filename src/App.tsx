@@ -18,6 +18,8 @@ import { MessageBox } from './components/messageBox';
 import { useRecoilValue } from 'recoil';
 import { BuyTokens } from './routes/BuyTokens';
 import { SideBar } from './components/sideBar';
+import { Landing } from './routes/landing';
+import { AboutPage } from './routes/about';
 
 function App() {
   console.log("Wassup")
@@ -30,6 +32,7 @@ function App() {
           <SideBarWithRecoil />
           <Routes>
             <Route path="/create" element={<CreateService />} />
+            <Route path="/" element={<Landing />} />
             <Route path="/teachrequest" element={<TeachService />} />
             <Route path="/traderequest" element={<TradeService />} />
             <Route path="/create/description" element={<ServiceDesc />} />
@@ -41,6 +44,7 @@ function App() {
             <Route path="/video" element={<Meeting />} />
             <Route path="/video/join/:id" element={<JoinMeeting />} />
             <Route path="/purchase" element={<BuyTokens />} />
+            <Route path="/about" element={<AboutPage />} />
           </Routes>
         </BrowserRouter>
       </div>

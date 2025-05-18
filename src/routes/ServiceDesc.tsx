@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { Button } from "../components/buttons";
+import { Button } from "../components/Button";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";
 import Loader from "../components/loader";

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { NotificationBell } from "./notification";
 import { MessageButton } from "./messageButtonIcon";
 import { messageButtonState, sideBarState, userTokens } from "../recoil/atoms";
-import { Button } from "./buttons";
+import { Button } from "./Button";
 import { useEffect, useState } from "react";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import axios from "axios";
