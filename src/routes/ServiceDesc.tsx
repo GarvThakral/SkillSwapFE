@@ -61,7 +61,7 @@ export function ServiceDesc(){
                 
             </div>
             {skillError ? <span className = {'text-red-600'}>Skill does not exist , create one now ?</span>:null}
-            {inputRef.current?.value.length != 0 ? <Button text="Next" style = "Primary" onclick = {()=>nextScreen()}/>:null}
+            {inputRef.current?.value.length != 0 ? <Button text="Next" onClick = {()=>nextScreen()}/>:null}
             {searching ?
                 <div className = {'overflow-y-auto h-28 border-2 w-64 p-3'}>
                     <div>

@@ -49,8 +49,8 @@ export function Service(){
                         {service.skill.proficiencyLevel}
                     </span>
                     <div className = {'flex space-x-7'}>
-                        <Button text = {"Teach"} style = {"Primary"} />
-                        <Button text = {"Teach"} style = {"Secondary"}/>
+                        <Button text = {"Teach"}  />
+                        <Button text = {"Teach"} />
                     </div>
                     <span className = {'flex items-center '}>Price:50<img src = '/coin.png' className = {'size-6'}></img></span>
         </div>

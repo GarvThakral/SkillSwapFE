@@ -139,7 +139,7 @@ export function SkillTrade() {
               <JobCard
                 clickFunction={navigate}
                 key={index}
-                createdAt={item.createdAt}
+                createdAt={item.createdAt!}
                 requesterId={item.requesterId}
                 tokenPrice={item.tokenPrice}
                 skillId={item.skillId}

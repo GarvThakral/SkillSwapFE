@@ -111,7 +111,7 @@ export function TradeService() {
             <span>Add a comment</span>
             <input ref={descRef} placeholder="I work on Tuesdays but I'm available after 9..." className="w-96" />
 
-            <Button text="Send request" style="Primary" onclick={createTradeRequest} />
+            <Button text="Send request" onClick={createTradeRequest} />
         </div>
     );
 }

@@ -73,10 +73,10 @@ export function SideBar(){
                 
                 {signedIn ?
                 <Link to = "/signin">
-                <Button text="Sign In" style ="Tertiary"/>
+                <Button text="Sign In" />
                 </Link> :
                 <Link to = "/signup">
-                <Button text="Sign Up" style ="Tertiary"/>
+                <Button text="Sign Up" />
                 </Link> 
                 }
         </div>

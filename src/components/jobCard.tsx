@@ -13,7 +13,7 @@ interface JobCardProps {
   user: {
     id: number;
     username: string;
-    email: string;
+    email?: string;
   };
   skill: {
     id: number;

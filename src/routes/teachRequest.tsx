@@ -65,7 +65,7 @@ export function TeachService(){
             <input ref = {dayRef} placeholder = {'Add your prefered days'}></input>
             <span>Add a comment</span>
             <input ref = {descRef} placeholder = {'I work on tuesdays but id be avalialble after 9 .... '} className = {'w-96'}></input>
-            <Button text = "Send request" style = "Primary" onclick={createTeachRequest}></Button>
+            <Button text = "Send request"  onClick={createTeachRequest}></Button>
         </div>
     );  
 }

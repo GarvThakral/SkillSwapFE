@@ -155,7 +155,6 @@ function Member({
       ? "bg-gradient-to-b from-blue-50 to-white"
       : "bg-gradient-to-b from-teal-50 to-white";
   const circleBg = color === "purple" ? "bg-purple-200 text-purple-600" : color === "blue" ? "bg-blue-200 text-blue-600" : "bg-teal-200 text-teal-600";
-  const borderColor = color === "purple" ? "border-purple-500" : color === "blue" ? "border-blue-500" : "";
   return (
     <div className={`${bgGradient} p-6 rounded-xl shadow-lg text-center group hover:shadow-xl transition-all`}>
       <div className={`w-24 h-24 rounded-full ${circleBg} mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform text-3xl font-bold`}>
