@@ -124,7 +124,7 @@ export function MessageBox() {
             className="absolute left-3"
             onClick={() => setSelectedUser(null)}
           >
-            <BackButtonIcon className="w-5 h-5 text-white" />
+            <BackButtonIcon />
           </button>
         )}
         <h2 className="text-lg font-semibold">
@@ -135,7 +135,7 @@ export function MessageBox() {
             className="absolute right-3"
             onClick={startMeeting}
           >
-            <VideoCallIcon className="w-5 h-5 text-white" />
+            <VideoCallIcon />
           </button>
         )}
       </div>
@@ -175,7 +175,7 @@ export function MessageBox() {
               onClick={sendMessage}
               className="ml-2 p-2 bg-purple-600 rounded-full text-white hover:bg-purple-700 transition"
             >
-              <SendButtonIcon className="w-5 h-5" />
+              <SendButtonIcon onclick={()=>sendMessage()}/>
             </button>
           </div>
         </div>
