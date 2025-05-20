@@ -1,9 +1,11 @@
+import  { useRef, useState } from "react";
 import axios from "axios";
-import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";
 import Loader from "../components/loader";
+import { Button } from "../components/Button";
+import { Home as HomeIcon } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -45,8 +47,21 @@ export function SignIn() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+      {/* Nav / Home */}
+      <header className="w-full max-w-md mb-6 flex justify-start">
+        <Link to="/">
+          <Button
+            text="Home"
+            icon={<HomeIcon className="w-4 h-4" />}
+            className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+            onClick={() => {}}
+          />
+        </Link>
+      </header>
+
       {isLoading && <Loader />}
+
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center">Sign In</h1>
 
@@ -75,12 +90,11 @@ export function SignIn() {
           <p className="text-red-500 text-sm text-center">Invalid credentials, please try again.</p>
         )}
 
-        <button
+        <Button
+          text={isLoading ? "Signing In…" : "Sign In"}
           onClick={signinUser}
           className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg transition"
-        >
-          Sign In
-        </button>
+        />
 
         <p className="text-center text-sm text-gray-600">
           Don’t have an account?{" "}

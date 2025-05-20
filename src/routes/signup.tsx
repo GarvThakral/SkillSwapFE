@@ -1,14 +1,15 @@
-// src/pages/SignUp.tsx
 import React, { useRef, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";
 import Loader from "../components/loader";
+import { Button } from "../components/Button";
+import { Home as HomeIcon } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Reusable InputField Component
+// InputField as before...
 const InputField = React.forwardRef<HTMLInputElement, {
   label: string;
   placeholder?: string;
@@ -54,7 +55,6 @@ export function SignUp() {
   const [isLoading, setIsLoading] = useRecoilState(loaderState);
   const navigate = useNavigate();
 
-  // handle file selection + preview
   function handleImageChange() {
     const file = imageRef.current?.files?.[0];
     if (file) {
@@ -85,7 +85,6 @@ export function SignUp() {
       image: imageRef.current?.files?.[0] || null,
     };
 
-    // validate
     const newErr = { ...errors };
     if (!vals.username) newErr.username = true;
     if (!vals.email) newErr.email = true;
@@ -125,8 +124,21 @@ export function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+      {/* Nav / Home */}
+      <header className="w-full max-w-2xl mb-6 flex justify-start">
+        <Link to="/">
+          <Button
+            text="Home"
+            icon={<HomeIcon className="w-4 h-4" />}
+            className="bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+            onClick={() => {}}
+          />
+        </Link>
+      </header>
+
       {isLoading && <Loader />}
+
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center">Create Account</h1>
 
@@ -166,12 +178,11 @@ export function SignUp() {
           {errors.image && <p className="text-red-500 text-sm">Image is required.</p>}
         </div>
 
-        <button
+        <Button
+          text="Sign Up"
           onClick={signupUser}
           className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg transition"
-        >
-          Sign Up
-        </button>
+        />
 
         <p className="text-center text-sm text-gray-600">
           Already have an account?{" "}
