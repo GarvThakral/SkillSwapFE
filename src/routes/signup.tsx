@@ -1,130 +1,185 @@
+// src/pages/SignUp.tsx
+import React, { useRef, useState } from "react";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";
-import { Link, useNavigate } from "react-router-dom";
 import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Reusable InputField Component
+const InputField = React.forwardRef<HTMLInputElement, {
+  label: string;
+  placeholder?: string;
+  type?: string;
+  error: boolean;
+}>(function InputField({ label, placeholder, type = "text", error }, ref) {
+  return (
+    <div className="space-y-1">
+      <label className="block text-gray-700 font-medium">{label}</label>
+      <input
+        ref={ref}
+        type={type}
+        placeholder={placeholder}
+        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+          error ? "border-red-500" : "border-gray-300"
+        }`}
+      />
+      {error && <p className="text-red-500 text-sm">{label} is required.</p>}
+    </div>
+  );
+});
+InputField.displayName = "InputField";
+
 export function SignUp() {
-    const [usernameError, setUsernameError] = useState(false);
-    const [emailError, setEmailError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-    const [imageError, setImageError] = useState(false);
+  const [errors, setErrors] = useState({
+    username: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    bio: false,
+    availability: false,
+    image: false,
+  });
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const bioRef = useRef<HTMLInputElement>(null);
+  const availabilityRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLInputElement>(null);
 
-    const usernameRef = useRef<HTMLInputElement>(null);
-    const emailRef = useRef<HTMLInputElement>(null);
-    const passwordRef = useRef<HTMLInputElement>(null);
-    const confirmPasswordRef = useRef<HTMLInputElement>(null);
-    const imageRef = useRef<HTMLInputElement>(null);
-    const availabilityRef = useRef<HTMLInputElement>(null);
-    const bioRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate()
-    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
-    
-    async function loginUser() {
-        setIsLoading(true);
-        setUsernameError(false);
-        setEmailError(false);
-        setPasswordError(false);
-        setConfirmPasswordError(false);
-        setImageError(false);
-    
-        if (
-            !usernameRef.current?.value ||
-            !emailRef.current?.value ||
-            !passwordRef.current?.value ||
-            !confirmPasswordRef.current?.value ||
-            !bioRef.current?.value ||
-            !availabilityRef.current?.value ||
-            !imageRef.current?.files?.length
-        ) {
-            if (!usernameRef.current?.value) setUsernameError(true);
-            if (!emailRef.current?.value) setEmailError(true);
-            if (!passwordRef.current?.value) setPasswordError(true);
-            if (!confirmPasswordRef.current?.value) setConfirmPasswordError(true);
-            if (!bioRef.current?.value) setConfirmPasswordError(true);
-            if (!availabilityRef.current?.value) setConfirmPasswordError(true);
-            if (!imageRef.current?.files?.length) setImageError(true);
-            
-            setIsLoading(false);
-            return; 
-        }
-    
-        if (passwordRef.current.value !== confirmPasswordRef.current.value) {
-            setConfirmPasswordError(true);
-            setIsLoading(false);
-            return;
-        }
-    
-        const form = new FormData();
-        form.append("username", usernameRef.current.value);
-        form.append("email", emailRef.current.value);
-        form.append("password", passwordRef.current.value);
-        form.append("bio", bioRef.current.value);
-        form.append("availabilitySchedule", availabilityRef.current.value);
-        form.append("profilePicture", imageRef.current.files[0]);
-    
-        try {
-            await axios.post(`${API_URL}/user/signup`, form, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
-            navigate('/skills');
-        } catch (error: any) {
-            console.error("Error:", error.response?.data || error.message);
-        }
-    
-        setIsLoading(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useRecoilState(loaderState);
+  const navigate = useNavigate();
+
+  // handle file selection + preview
+  function handleImageChange() {
+    const file = imageRef.current?.files?.[0];
+    if (file) {
+      setPreviewUrl(URL.createObjectURL(file));
+      setErrors((e) => ({ ...e, image: false }));
     }
-    
+  }
 
-    return (
-        <div className="h-screen overflow-hidden flex items-center justify-center">
-            {isLoading ? <Loader/>:null}
-            <div className="min-w-[400px] max-w-[800px] w-[80%] h-[500px] shadow-2xl flex flex-col items-center justify-around p-3">
-                <span className="text-3xl p-2 px-3 border-b-2">Sign up</span>
-                <div className = {'flex w-[80%]'}>
+  async function signupUser() {
+    setIsLoading(true);
+    setErrors({
+      username: false,
+      email: false,
+      password: false,
+      confirmPassword: false,
+      bio: false,
+      availability: false,
+      image: false,
+    });
 
-                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
-                        <input ref={usernameRef} className="outline-none border-b w-[80%]" placeholder="Username" />
-                        {usernameError && <span className="text-red-500 w-[80%]">Username is required.</span>}
+    const vals = {
+      username: usernameRef.current?.value.trim() || "",
+      email: emailRef.current?.value.trim() || "",
+      password: passwordRef.current?.value || "",
+      confirmPassword: confirmPasswordRef.current?.value || "",
+      bio: bioRef.current?.value.trim() || "",
+      availability: availabilityRef.current?.value.trim() || "",
+      image: imageRef.current?.files?.[0] || null,
+    };
 
-                        <input ref={emailRef} className="outline-none border-b w-[80%]" placeholder="Email" />
-                        {emailError && <span className="text-red-500 w-[80%]">Email is required.</span>}
+    // validate
+    const newErr = { ...errors };
+    if (!vals.username) newErr.username = true;
+    if (!vals.email) newErr.email = true;
+    if (!vals.password) newErr.password = true;
+    if (!vals.confirmPassword) newErr.confirmPassword = true;
+    if (!vals.bio) newErr.bio = true;
+    if (!vals.availability) newErr.availability = true;
+    if (!vals.image) newErr.image = true;
+    if (vals.password && vals.confirmPassword && vals.password !== vals.confirmPassword) {
+      newErr.confirmPassword = true;
+    }
 
-                        <input ref={passwordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Password" />
-                        {passwordError && <span className="text-red-500 w-[80%]">Password is required.</span>}
+    if (Object.values(newErr).some(Boolean)) {
+      setErrors(newErr);
+      setIsLoading(false);
+      return;
+    }
 
+    const form = new FormData();
+    form.append("username", vals.username);
+    form.append("email", vals.email);
+    form.append("password", vals.password);
+    form.append("bio", vals.bio);
+    form.append("availabilitySchedule", vals.availability);
+    form.append("profilePicture", vals.image!);
 
-                    </div>
-                    <div className = {'flex-1 flex flex-col items-center space-y-5'}>
-                        <input ref={availabilityRef} className="outline-none border-b w-[80%]" placeholder="Availability (e.g., Mon-Friday)" />
-                        <input ref={bioRef} className="outline-none border-b w-[80%]" placeholder="Bio" />
-                        <input ref={confirmPasswordRef} className="outline-none border-b w-[80%]" type="password" placeholder="Confirm Password" />
-                        {confirmPasswordError && <span className="text-red-500 w-[80%]">Passwords do not match.</span>}
-                    </div>
-                </div>
+    try {
+      await axios.post(`${API_URL}/user/signup`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      navigate("/skills");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-                <div className = {'flex flex-col'}>
-                    <label htmlFor="pfp" className="border-2 p-2 rounded-lg text-black cursor-pointer">Upload Profile Picture</label>
-                    <input ref={imageRef} type="file" id="pfp" className="hidden" />
-                    {imageError && <span className="text-red-500">Please upload a profile picture.</span>}
-                </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+      {isLoading && <Loader />}
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        <h1 className="text-2xl font-bold text-center">Create Account</h1>
 
-                <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-[40%]" onClick={()=>loginUser()}>
-                    Sign Up
-                </button>
-
-                <div className="h-fit py-3 w-[80%] flex justify-around">
-                    <span className="border-2 py-2 px-4 rounded-lg">Google</span>
-                    <span className="border-2 py-2 px-4 rounded-lg">Linkedin</span>
-                    <span className="border-2 py-2 px-4 rounded-lg">SSO</span>
-                </div>
-                <Link to = "/signin"><span className="text-md text-blue-600 text-md cursor-pointer">Sign in instead ?</span></Link>
-
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <InputField label="Username" ref={usernameRef} error={errors.username} placeholder="Your username" />
+            <InputField label="Email" ref={emailRef} type="email" error={errors.email} placeholder="you@example.com" />
+            <InputField label="Password" ref={passwordRef} type="password" error={errors.password} placeholder="Password" />
+          </div>
+          <div className="space-y-4">
+            <InputField label="Availability" ref={availabilityRef} error={errors.availability} placeholder="e.g. Mon–Fri" />
+            <InputField label="Bio" ref={bioRef} error={errors.bio} placeholder="Short bio" />
+            <InputField
+              label="Confirm Password"
+              ref={confirmPasswordRef}
+              type="password"
+              error={errors.confirmPassword}
+              placeholder="Repeat password"
+            />
+          </div>
         </div>
-    );
+
+        <div className="space-y-2">
+          <label className="block text-gray-700 font-medium">Profile Picture</label>
+          <div className="flex items-center space-x-4">
+            <label
+              htmlFor="pfp"
+              className="bg-gray-100 px-4 py-2 rounded cursor-pointer hover:bg-gray-200"
+            >
+              Choose File
+            </label>
+            {previewUrl && (
+              <img src={previewUrl} alt="preview" className="w-16 h-16 rounded-full object-cover border" />
+            )}
+          </div>
+          <input id="pfp" type="file" ref={imageRef} className="hidden" onChange={handleImageChange} />
+          {errors.image && <p className="text-red-500 text-sm">Image is required.</p>}
+        </div>
+
+        <button
+          onClick={signupUser}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg transition"
+        >
+          Sign Up
+        </button>
+
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link to="/signin" className="text-purple-600 hover:underline">
+            Sign In
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }

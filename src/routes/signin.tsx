@@ -1,90 +1,94 @@
 import axios from "axios";
 import { useRef, useState } from "react";
-import {  Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { loaderState } from "../recoil/atoms";
 import Loader from "../components/loader";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-export function SignIn(){
-    const [usernameError,setUsernameError] = useState(false);
-    const [passwordError,setpasswordError] = useState(false);
-    const [userExistsError,setUserExistsError] = useState(false);
-    console.log(setUsernameError)
-    const usernameRef = useRef<HTMLInputElement>(null);
-    const passwordRef = useRef<HTMLInputElement>(null);
-    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
-    const navigate = useNavigate();
+export function SignIn() {
+  const [usernameError, setUsernameError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [credentialsError, setCredentialsError] = useState(false);
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useRecoilState(loaderState);
+  const navigate = useNavigate();
 
-    async function signinUser(){
-        setIsLoading(true);
-        setUsernameError(false);
-        setpasswordError(false);
-        setUserExistsError(false);
-        if(usernameRef.current && passwordRef.current){
-            if(usernameRef.current.value.length == 0 || passwordRef.current.value.length == 0){
-                if(passwordRef.current.value.length == 0){
-                    setpasswordError(true)
-                }
-                if(usernameRef.current.value.length == 0){
-                    setUsernameError(true)
-                }
-            setIsLoading(false);
+  async function signinUser() {
+    setIsLoading(true);
+    setUsernameError(false);
+    setPasswordError(false);
+    setCredentialsError(false);
 
-                return;
-            }
-            try{
-                const response = await axios.post(`${API_URL}/user/signin`,{
-                    username:usernameRef.current.value,
-                    password:passwordRef.current.value
-                })
-                if(response.status == 303){
+    const username = usernameRef.current?.value.trim() || "";
+    const password = passwordRef.current?.value || "";
 
-                }
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('userId', response.data.userId);
-                setIsLoading(false);
-                navigate('/skills')
-                
-            }catch(e){
-                setUserExistsError(true);
-                setIsLoading(false);
-                console.log(e);
-            }
-
-
-        }
+    if (!username || !password) {
+      if (!username) setUsernameError(true);
+      if (!password) setPasswordError(true);
+      setIsLoading(false);
+      return;
     }
-    return(
-        <div className = {'h-screen overflow-hidden flex items-center justify-center'}>
-            {isLoading ? <Loader/>:null}
-            <div className = "w-[500px] h-[600px] shadow-2xl flex flex-col items-center justify-around p-3">
-                <span className = "text-3xl border-b-2 p-2 px-3">Sign up</span>
-                <div className = {'flex flex-col w-[80%]'}>
-                    <input ref = {usernameRef} className = "outline-none border-b w-[80%]" placeholder="Username"></input>
-                    {usernameError ?
-                    <span className = "text-red-500 w-[80%]">Please enter your username</span>
-                    :null}
-                </div>
-                <div className = {'flex flex-col w-[80%]'}>
-                    <input ref = {passwordRef} className = "outline-none border-b w-[80%]" placeholder="Password"></input>
-                    {passwordError ?
-                    <span className = "text-red-500 w-[80%]">Please enter your passworda</span>
-                    :null}
-                </div>
-                    {userExistsError ?
-                    <span className = "text-red-500 w-[80%]">Please check your credentials</span>
-                    :null}
-                <button className = "bg-blue-500 text-white px-4 py-2 rounded-sm w-[80%]" onClick = {signinUser}>Sign Up</button>
-                <div className = "space-x-8 h-fit py-3 w-[80%] flex justify-between">
-                    <span className = "border-2 py-2 px-4 rounded-lg">Google</span>
-                    <span className = "border-2 py-2 px-4 rounded-lg">Linkedin</span>
-                    <span className = "border-2 py-2 px-4 rounded-lg">SSO</span>
-                </div>
-                <Link to = "/signup"><span className="text-md text-blue-600 text-md cursor-pointer">Sign up instead ?</span></Link>
 
-            </div>
+    try {
+      const { data } = await axios.post(`${API_URL}/user/signin`, { username, password });
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.userId);
+      navigate("/skills");
+    } catch {
+      setCredentialsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-blue-50 p-4">
+      {isLoading && <Loader />}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6">
+        <h1 className="text-2xl font-bold text-center">Sign In</h1>
+
+        <div className="space-y-2">
+          <label className="block text-gray-700">Username</label>
+          <input
+            ref={usernameRef}
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter your username"
+          />
+          {usernameError && <p className="text-red-500 text-sm">Username is required.</p>}
         </div>
-    );
+
+        <div className="space-y-2">
+          <label className="block text-gray-700">Password</label>
+          <input
+            ref={passwordRef}
+            type="password"
+            className="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+            placeholder="Enter your password"
+          />
+          {passwordError && <p className="text-red-500 text-sm">Password is required.</p>}
+        </div>
+
+        {credentialsError && (
+          <p className="text-red-500 text-sm text-center">Invalid credentials, please try again.</p>
+        )}
+
+        <button
+          onClick={signinUser}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg transition"
+        >
+          Sign In
+        </button>
+
+        <p className="text-center text-sm text-gray-600">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-purple-600 hover:underline">
+            Sign Up
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }
