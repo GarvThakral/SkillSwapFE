@@ -1,239 +1,202 @@
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import { UserMessage } from "../routes/utilInterface/UserMessageInterface";
-import { BackButtonIcon } from "./backButton";
-import { SendButtonIcon } from "./sendButton";
-import { MessageInterface } from "../routes/utilInterface/MessagesInterface";
-import { loaderState, meetingReceiverId } from "../recoil/atoms";
-import { VideoCallIcon } from "./videoCallIcon";
-import { Link, useNavigate } from "react-router-dom";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { TransactionInterface } from "../routes/utilInterface/TransactionInterface";
-import Loader from "./loader";
+"use client"
 
-const API_URL = import.meta.env.VITE_API_URL;
+import axios from "axios"
+import { useEffect, useRef, useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import { useRecoilState, useSetRecoilState } from "recoil"
+import { loaderState, meetingReceiverId } from "../recoil/atoms"
+import { UserMessage } from "../routes/utilInterface/UserMessageInterface"
+import { MessageInterface } from "../routes/utilInterface/MessagesInterface"
+import { TransactionInterface } from "../routes/utilInterface/TransactionInterface"
+import { BackButtonIcon } from "./backButton"
+import { VideoCallIcon } from "./videoCallIcon"
+import { SendButtonIcon } from "./sendButton"
+import Loader from "./loader"
+
+const API_URL = import.meta.env.VITE_API_URL
 
 export function MessageBox() {
-    const token = localStorage.getItem('token');
-    const [userProfiles, setUserProfiles] = useState<UserMessage[] | null>(null);
-    const [userClicked, setUserClicked] = useState(false);
-    const [currentUsername, setCurrentUsername] = useState('');
-    const [messages, setMessages] = useState<MessageInterface[]>([]);
-    const [receiverId, setReceiverId] = useState<number | null>(null);
-    const setMeetingRecId = useSetRecoilState(meetingReceiverId);
-    const [socket, setSocket] = useState<WebSocket | null>(null);
-    const [ transactionDetails , setTransactionDetails ] = useState<TransactionInterface | null>(null);
+  const token = localStorage.getItem("token") || ""
+  const userId = Number(localStorage.getItem("userId") || "0")
+  const navigate = useNavigate()
+  const setMeetingRecId = useSetRecoilState(meetingReceiverId)
+  const [isLoading, setIsLoading] = useRecoilState(loaderState)
 
-    const navigate = useNavigate();
-    const [ isLoading , setIsLoading ] = useRecoilState(loaderState)
-    const userId = parseInt(localStorage.getItem('userId') || "0");
-    const inputRef = useRef<HTMLInputElement>(null);
+  // users & chat state
+  const [userProfiles, setUserProfiles] = useState<UserMessage[]>([])
+  const [selectedUser, setSelectedUser] = useState<UserMessage | null>(null)
+  const [messages, setMessages] = useState<MessageInterface[]>([])
+  const [socket, setSocket] = useState<WebSocket | null>(null)
+  const [txDetails, setTxDetails] = useState<TransactionInterface | null>(null)
 
-    async function fetchUserNames() {
-        setIsLoading(true)
-        const response = await axios.get(`${API_URL}/messages/users`, {
-            headers: { token }
-        });
-        setUserProfiles(response.data.userDetails);
-        setIsLoading(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // fetch users
+  useEffect(() => {
+    ;(async () => {
+      setIsLoading(true)
+      const { data } = await axios.get(`${API_URL}/messages/users`, { headers: { token } })
+      setUserProfiles(data.userDetails)
+      setIsLoading(false)
+    })()
+  }, [])
+
+  // handle incoming tx to auto-complete
+  useEffect(() => {
+    if (!txDetails) return
+    ;(async () => {
+      await axios.post(`${API_URL}/transaction/complete`, {
+        id: txDetails.id,
+        senderId: txDetails.senderId,
+        recieverId: txDetails.recieverId,
+        amount: txDetails.recieverAmount,
+      }, { headers: { token } })
+      // delete original request
+      const url = txDetails.type === "TEACH_REQUEST"
+        ? `${API_URL}/teachRequest`
+        : `${API_URL}/tradeRequest`
+      await axios.delete(url, {
+        headers: { token },
+        data: { [`${txDetails.type.toLowerCase()}` + "Id"]: txDetails.requestId }
+      })
+    })()
+  }, [txDetails])
+
+  // start a meeting (and navigate)
+  async function startMeeting() {
+    if (!selectedUser) return
+    setIsLoading(true)
+    const res = await axios.post(`${API_URL}/transaction/pending`,
+      { user2Id: selectedUser.id },
+      { headers: { token } }
+    )
+    if (res.status === 200) {
+      setTxDetails(res.data.transaction)
+      setMeetingRecId(selectedUser.id)
+      navigate("/video")
     }
+    setIsLoading(false)
+  }
 
-    async function startMeeting(){
-        setIsLoading(true)
-        const response = await axios.post(`${API_URL}/transaction/pending`,
-            {
-                user2Id:receiverId
-            },
-            {
-                headers:{
-                    token
-                }
-            }
-        );
-        if(response.status == 200){
-            setTransactionDetails(response.data.transaction);            
-            setIsLoading(false)
-            navigate("/video")
-        }else{
-            setIsLoading(false)
-        }
+  // open chat & setup websocket
+  async function openChat(user: UserMessage) {
+    setSelectedUser(user)
+    setMeetingRecId(user.id)
+    setIsLoading(true)
+    const { data } = await axios.post(`${API_URL}/messages/fetchMessages`,
+      { receiverId: user.id }, { headers: { token } }
+    )
+    setMessages(data.allMessages)
+    setIsLoading(false)
+
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      const ws = new WebSocket("ws://localhost:8080")
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ type: "Register", senderId: userId }))
+      }
+      ws.onmessage = (ev) => {
+        const msg: MessageInterface = JSON.parse(ev.data)
+        setMessages((m) => [...m, msg])
+      }
+      ws.onclose = () => setSocket(null)
+      setSocket(ws)
     }
-    async function completeTransaction(){
-        await axios.post(`${API_URL}/transaction/complete`,
-            {
-                id:transactionDetails?.id,
-                senderId:transactionDetails?.senderId,
-                recieverId:transactionDetails?.recieverId,
-                amount:transactionDetails?.recieverAmount
-            },{
-                headers:{
-                    token
-                }
-            }
-        )
-        if(transactionDetails?.type == 'TEACH_REQUEST'){
-            await axios.delete(`${API_URL}/teachRequest`,
-                {
-                    headers:{
-                        token
-                    },data:{
-                        teachRequestId:transactionDetails?.requestId
-                    }
-                }
-            )
-        }else if(transactionDetails?.type == 'TRADE_REQUEST'){
-            await axios.delete(`${API_URL}/tradeRequest`,
-                {
-                    headers:{
-                        token
-                    },data:{
-                        tradeRequestId:transactionDetails?.requestId
-                    }
-                }
-            )
-        }
-    }
+  }
 
+  // send a message
+  function sendMessage() {
+    if (!socket || !selectedUser || !inputRef.current?.value.trim()) return
+    const content = inputRef.current.value.trim()
+    const payload = { type: "Message", senderId: userId, receiverId: selectedUser.id, message: content }
+    socket.send(JSON.stringify(payload))
+    setMessages((m) => [...m, { senderId: userId, receiverId: selectedUser.id, content }])
+    inputRef.current.value = ""
+  }
 
-    useEffect(()=>{
-        completeTransaction();
-    },[transactionDetails])
+  return (
+    <div className="fixed bottom-6 right-6 w-96 h-[400px] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden z-50">
+      {isLoading && <Loader />}
 
-    async function openUserChats(username: string, userIds: number) {
-        setCurrentUsername(username);
-        setReceiverId(userIds);
-        setUserClicked(true);
-        setMeetingRecId(userIds);
+      {/* Header */}
+      <div className="flex items-center justify-center relative bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3">
+        {selectedUser && (
+          <button
+            className="absolute left-3"
+            onClick={() => setSelectedUser(null)}
+          >
+            <BackButtonIcon className="w-5 h-5 text-white" />
+          </button>
+        )}
+        <h2 className="text-lg font-semibold">
+          {selectedUser ? selectedUser.username : "Messages"}
+        </h2>
+        {selectedUser && (
+          <button
+            className="absolute right-3"
+            onClick={startMeeting}
+          >
+            <VideoCallIcon className="w-5 h-5 text-white" />
+          </button>
+        )}
+      </div>
 
-        const response = await axios.post(`${API_URL}/messages/fetchMessages`, { receiverId: userIds }, {
-            headers: { token }
-        });
-        setMessages(response.data.allMessages);
-
-        if (!socket || socket.readyState !== WebSocket.OPEN) {
-            const newSocket = new WebSocket('ws://localhost:8080');
-        
-            newSocket.onopen = () => {
-                newSocket.send(JSON.stringify({
-                    type: "Register",
-                    senderId: userId, // Ensure user is registered to receive messages
-                }));
-            };
-        
-            newSocket.onmessage = (event) => {
-                const receivedMessage = JSON.parse(event.data);
-        
-                setMessages(prevMessages => [...prevMessages, receivedMessage]);
-            };
-        
-            newSocket.onclose = () => {
-                setSocket(null);
-            };
-        
-            setSocket(newSocket);
-        }
-        
-    }
-
-    function sendMessage() {
-        if (inputRef.current && inputRef.current.value.trim() !== "" && socket && receiverId) {
-            const messageData = {
-                type: "Message",
-                senderId: userId,
-                receiverId: receiverId,
-                message: inputRef.current.value
-            };
-            socket.send(JSON.stringify(messageData));
-
-            const uiMessage = {
-                senderId: userId,
-                receiverId: receiverId,
-                content: inputRef.current.value,
-            };
-            setMessages(prevMessages => [...prevMessages, uiMessage]);
-
-            inputRef.current.value = "";
-        }
-    }
-
-    useEffect(() => {
-        fetchUserNames();
-    }, []);
-
-    return (
-        <div className="absolute right-6 bottom-6 w-96 h-[400px] bg-slate-100 drop-shadow-lg z-30 flex flex-col rounded-xl">
-            {isLoading ? <Loader/> : null}
-    
-            {/* Header Section - 10% Height */}
-            <div className="h-[10%] flex justify-center w-full p-2">
-                {userClicked && (
-                    <span className="self-center absolute left-3 cursor-pointer"
-                        onClick={() => {
-                            setUserClicked(false);
-                            setCurrentUsername('');
-                            setReceiverId(null);
-                            setMessages([])
-                        }}>
-                        <BackButtonIcon />
-                    </span>
+      {/* Body */}
+      {selectedUser ? (
+        <div className="flex flex-col flex-1">
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
+            {messages.map((m, i) => (
+              <div
+                key={i}
+                className={`max-w-[80%] px-3 py-2 rounded-lg ${
+                  m.senderId === userId ? "ml-auto bg-purple-500 text-white" : "mr-auto bg-gray-200 text-gray-800"
+                }`}
+              >
+                {m.type === "MEETING" ? (
+                  <Link
+                    to={`/video/join/${m.meetingId}`}
+                    className="underline"
+                  >
+                    {m.content}
+                  </Link>
+                ) : (
+                  m.content
                 )}
-                <div className="self-center flex items-center">
-                    {userClicked ? <img 
-                        src={userProfiles?.find(user => user.username === currentUsername)?.profilePicture} 
-                        className="size-8 rounded-full"
-                        alt="profile"
-                    /> : null}
-                    <span>{userClicked ? currentUsername : "Messages"}</span>
-                </div>
-    
-                {userClicked && (
-                    <span className="self-center absolute right-3 cursor-pointer">
-                        <div onClick={()=>startMeeting()}>
-                            <VideoCallIcon />
-                        </div>
-                    </span>
-                )}
-            </div>
-    
-            {userClicked ? (
-                <div className="flex flex-col h-full">
-    
-                    {/* Chat Messages Section - 75% Height */}
-                    <div className="h-[75%] flex flex-col overflow-auto">
-                        {messages.map((item, index) => (
-                            item.type === "MEETING" ? (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end ml-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12" : "mr-20 bg-purple-300 text-brown-700 rounded-lg px-2 py-1 m-1 mx-2 min-w-12"}`}>
-                                    <Link to={`/video/join/${item.meetingId}`}>
-                                        <span>{item.content}</span>
-                                    </Link>
-                                </div>
-                            ) : (
-                                <div key={index} className={`w-fit ${userId === item.senderId ? "self-end bg-blue-500 text-white px-2 py-1 rounded-lg m-1 mx-2" : "bg-gray-200 px-2 py-1 rounded-lg m-1 mx-2"}`}>
-                                    {item.content}
-                                </div>
-                            )
-                        ))}
-                    </div>
-    
-                    {/* Input Section - 15% Height */}
-                    <div className="h-[15%] flex justify-around items-center p-2">
-                        <input className="w-80 rounded-xl p-2 border-2" ref={inputRef} placeholder="Type your message here"/>
-                        <span className="bg-blue-600 bg-gradient-to-b from-blue-200 to-indigo-600 p-2 rounded-[50%]">
-                            <SendButtonIcon onclick={sendMessage} />
-                        </span>
-                    </div>
-                </div>
-            ) : (
-                <div className="flex flex-col items-start w-full p-3 overflow-auto bg-white h-[80%] rounded-b-xl">
-                    {userProfiles?.map((item) => (
-                        <div key={item.id} className="flex cursor-pointer p-2" onClick={() => openUserChats(item.username, item.id)}>
-                            <img src={item.profilePicture} className="size-8 rounded-full" alt="profile" />
-                            <span className="ml-2">{item.username}</span>
-                        </div>
-                    ))}
-                </div>
-            )}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center p-3 border-t">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Type a message..."
+              className="flex-1 px-3 py-2 border rounded-full focus:ring-purple-500 focus:border-transparent"
+            />
+            <button
+              onClick={sendMessage}
+              className="ml-2 p-2 bg-purple-600 rounded-full text-white hover:bg-purple-700 transition"
+            >
+              <SendButtonIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-    );
-    
+      ) : (
+        <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
+          {userProfiles.map((u) => (
+            <button
+              key={u.id}
+              onClick={() => openChat(u)}
+              className="flex items-center w-full p-2 rounded-lg hover:bg-gray-100 transition"
+            >
+              <img
+                src={u.profilePicture}
+                alt={u.username}
+                className="w-8 h-8 rounded-full mr-3"
+              />
+              <span className="text-gray-800">{u.username}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }

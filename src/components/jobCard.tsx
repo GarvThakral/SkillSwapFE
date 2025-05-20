@@ -1,130 +1,148 @@
+"use client";
 
-import { Clock, User, Award, ArrowRight } from "lucide-react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import {
+  receiverId,
+  skillId,
+  teachRequestTokens,
+  tradeRequestRecieverTokens,
+} from "../recoil/atoms";
+import { ServiceCard } from "../routes/utilInterface/ServiceCardInterface";
 
-interface JobCardProps {
+// Define the interface for the user and skill
+interface User {
   id: number;
-  createdAt: string;
-  updatedAt: string;
-  requesterId: number;
-  tokenPrice: number;
-  skillId: number;
-  status: string;
-  description: string;
-  user: {
-    id: number;
-    username: string;
-    email?: string;
-  };
-  skill: {
-    id: number;
-    title: string;
-    description: string;
-    proficiencyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | string;
-  };
-  clickFunction: (path: string) => void;
+  username: string;
+  profilePicture?: string;
 }
 
-export function JobCard(props: JobCardProps) {
-  // Format ISO date to "Mon DD, YYYY"
-  function formatDate(dateString: string) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
+interface Skill {
+  id: number;
+  title: string;
+  description: string;
+  proficiencyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+}
 
-  // Map proficiency to Tailwind badge colors
-  function getProficiencyColor(level: string) {
-    switch (level) {
-      case "BEGINNER":
-        return "bg-green-100 text-green-700";
-      case "INTERMEDIATE":
-        return "bg-blue-100 text-blue-700";
-      case "ADVANCED":
-        return "bg-purple-100 text-purple-700";
-      default:
-        return "bg-gray-100 text-gray-700";
+const API_URL = import.meta.env.VITE_API_URL;
+
+const profTextStyles = {
+  BEGINNER: "bg-green-100 text-green-700 border-green-200",
+  INTERMEDIATE: "bg-yellow-100 text-yellow-700 border-yellow-200",
+  ADVANCED: "bg-red-100 text-red-700 border-red-200",
+};
+
+export function JobCard(props: ServiceCard) {
+  const navigate = useNavigate();
+  const [recId, setRecId] = useRecoilState(receiverId);
+  const setSkillId = useSetRecoilState(skillId);
+  const setTeachTokenValue = useSetRecoilState(teachRequestTokens);
+  const setTradeRecieverTokens = useSetRecoilState(tradeRequestRecieverTokens);
+  const token = localStorage.getItem("token");
+
+  async function checkPendingTransaction(user2Id: number) {
+    try {
+      const response = await axios.post(
+        `${API_URL}/transaction/pending`,
+        { user2Id },
+        { headers: { token } }
+      );
+      return response.status === 200;
+    } catch (error) {
+      return false;
     }
   }
 
-  // Map status to Tailwind badge colors
-  function getStatusColor(status: string) {
-    switch (status) {
-      case "Pending":
-        return "bg-yellow-100 text-yellow-700";
-      case "Completed":
-        return "bg-green-100 text-green-700";
-      case "Cancelled":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
+  async function createTeachRequest() {
+    const targetUserId = props.user.id;
+    setRecId(targetUserId);
+    const isPending = await checkPendingTransaction(targetUserId);
+
+    if (isPending) {
+      alert("Complete your remaining transaction with this user first");
+      return;
     }
+
+    const userId = Number.parseInt(localStorage.getItem("userId") ?? "0");
+    await axios.post(`${API_URL}/user/tokens`, { userId });
+
+    setTeachTokenValue(props.tokenPrice);
+    setSkillId(props.skill.id);
+    navigate("/teachRequest");
+  }
+
+  async function createTradeRequest() {
+    const targetUserId = props.user.id;
+    setRecId(targetUserId);
+    const isPending = await checkPendingTransaction(targetUserId);
+
+    if (isPending) {
+      alert("Complete your remaining transaction with this user first");
+      return;
+    }
+
+    setSkillId(props.skill.id);
+    setTradeRecieverTokens(props.tokenPrice);
+    navigate("/tradeRequest");
   }
 
   return (
-    <div
-      onClick={() => props.clickFunction(`/service/${props.id}`)}
-      className="cursor-pointer bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col h-full"
-    >
-      {/* Top Content */}
-      <div className="p-5 flex-grow flex flex-col">
-        {/* Title & Status */}
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
-            {props.skill.title}
-          </h3>
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-              props.status
-            )}`}
-          >
-            {props.status}
-          </span>
+    <div className="w-96 rounded-xl bg-white h-80 overflow-hidden my-2 mx-2 shadow-lg hover:shadow-xl hover:scale-105 duration-300 border border-gray-100">
+      {/* Head Block */}
+      <div
+        className="flex justify-between items-center border-b border-gray-200 p-4 h-[25%] relative bg-gradient-to-r from-purple-50 to-blue-50"
+        onClick={() => props.clickFunction?.(props.id)}
+      >
+        {/* Token Price */}
+        <div className="absolute top-4 left-4 flex items-center bg-white px-2 py-1 rounded-full shadow-sm">
+          <img src="/coin.png" className="w-5 h-5 mr-1" alt="Token" />
+          <span className="font-bold text-purple-700">{props.tokenPrice}</span>
         </div>
 
-        {/* User & Proficiency */}
-        <div className="flex items-center mb-3 text-sm text-gray-600">
-          <User className="w-4 h-4 mr-1" />
-          <span>{props.user.username}</span>
-          <span className="mx-2">•</span>
-          <Award className="w-4 h-4 mr-1" />
-          <span
-            className={`px-2 py-0.5 rounded-full text-xs font-medium ${getProficiencyColor(
-              props.skill.proficiencyLevel
-            )}`}
-          >
-            {props.skill.proficiencyLevel.charAt(0) +
-              props.skill.proficiencyLevel.slice(1).toLowerCase()}
-          </span>
+        {/* Profile */}
+        <div className="flex justify-center mx-auto items-center">
+          <img
+            src={props.user.profilePicture || "/placeholder.svg"}
+            className="rounded-full w-10 h-10 border-2 border-white shadow-sm"
+            alt="Profile"
+          />
+          <div className="ml-2">
+            <p className="font-medium text-gray-800">{props.user.username}</p>
+            <p className="text-yellow-500 text-xs">★★★★★</p>
+          </div>
         </div>
 
-        {/* Description */}
-        <p className="text-gray-600 mb-4 line-clamp-3">
-          {props.description}
-        </p>
-
-        {/* Posted Date */}
-        <div className="flex items-center text-sm text-gray-500 mt-auto">
-          <Clock className="w-4 h-4 mr-1" />
-          <span>Posted on {formatDate(props.createdAt)}</span>
+        {/* Proficiency Badge */}
+        <div
+          className={`absolute top-4 right-4 px-2 py-1 rounded-md text-xs font-semibold ${
+            profTextStyles[props.skill.proficiencyLevel]
+          }`}
+        >
+          {props.skill.proficiencyLevel}
         </div>
       </div>
 
-      {/* Footer with Token Price & Button */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 flex justify-between items-center border-t border-gray-100">
-        <div className="flex items-center">
-          <img src="/token.svg" alt="Token" className="w-5 h-5 mr-1" />
-          <span className="font-bold text-purple-700">
-            {props.tokenPrice}
-          </span>
-          <span className="text-gray-600 text-sm ml-1">tokens</span>
+      {/* Body Block */}
+      <div className="flex flex-col justify-between h-[75%] p-5">
+        <div className="flex flex-col items-center">
+          <p className="font-bold text-lg text-gray-800 mb-2">"{props.skill.title}"</p>
+          <p className="text-center text-gray-600 line-clamp-3">{props.skill.description}</p>
         </div>
-        <button className="flex items-center text-purple-600 font-medium hover:text-purple-700 transition-colors">
-          <span>View Details</span>
-          <ArrowRight className="w-4 h-4 ml-1" />
-        </button>
+        <div className="flex justify-around w-full mt-4">
+          <button
+            onClick={createTeachRequest}
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg"
+          >
+            Teach
+          </button>
+          <button
+            onClick={createTradeRequest}
+            className="px-6 py-2 bg-white text-purple-600 border-2 border-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors"
+          >
+            Trade
+          </button>
+        </div>
       </div>
     </div>
   );
