@@ -11,19 +11,6 @@ import {
 } from "../recoil/atoms";
 import { ServiceCard } from "../routes/utilInterface/ServiceCardInterface";
 
-// Define the interface for the user and skill
-interface User {
-  id: number;
-  username: string;
-  profilePicture?: string;
-}
-
-interface Skill {
-  id: number;
-  title: string;
-  description: string;
-  proficiencyLevel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-}
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -35,7 +22,7 @@ const profTextStyles = {
 
 export function JobCard(props: ServiceCard) {
   const navigate = useNavigate();
-  const [recId, setRecId] = useRecoilState(receiverId);
+  const [, setRecId] = useRecoilState(receiverId);
   const setSkillId = useSetRecoilState(skillId);
   const setTeachTokenValue = useSetRecoilState(teachRequestTokens);
   const setTradeRecieverTokens = useSetRecoilState(tradeRequestRecieverTokens);
